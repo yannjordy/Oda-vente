@@ -2061,7 +2061,7 @@ function afficherIdentifiantActuel() {
         if (identifiantActuel) identifiantActuel.style.display = 'block';
         if (identifiantActif) identifiantActif.textContent = parametres.identifiant.slug;
         if (lienBoutique) {
-            lienBoutique.value = `${window.location.origin}oda-navy.vercel.app/boutique.html?shop=${parametres.identifiant.slug}`;
+            lienBoutique.value = `${window.location.origin}/boutique.html?shop=${parametres.identifiant.slug}`;
         }
         if (formulaire) formulaire.style.display = 'none';
     }
