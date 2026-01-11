@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget - Ma Boutique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow-chat: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f7;
+        }
+
+        /* Bouton Flottant */
+        .chat-float-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            z-index: 998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .chat-float-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #FF3B30;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 7px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        /* Widget de Chat */
+        .chat-widget {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            width: 90%;
+            max-width: 400px;
+            height: 550px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-chat);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUpChat 0.3s ease;
+        }
+
+        @keyframes slideUpChat {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .chat-widget.active {
+            display: flex;
+        }
+
+        /* En-tête */
+        .chat-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .chat-header-text h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .chat-status {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #34C759;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .btn-close-chat {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .btn-close-chat:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Formulaire d'Identification */
+        .chat-identification {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 32px 24px;
+            background: #f8f9fa;
+        }
+
+        .welcome-icon {
+            background: var(--primary-gradient);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .chat-identification h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.3rem;
+        }
+
+        .chat-identification p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .name-input {
+            width: 100%;
+            max-width: 280px;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-start-chat {
+            width: 100%;
+            max-width: 280px;
+            padding: 14px 24px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-start-chat:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-start-chat:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .privacy-note {
+            font-size: 0.75rem;
+            color: #999;
+            text-align: center;
+            margin-top: 16px;
+            max-width: 280px;
+        }
+
+        /* Zone de Messages */
+        .chat-messages-container {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .chat-messages-container.active {
+            display: flex;
+        }
+
+        .chat-messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Message Bubble */
+        .message-bubble {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            word-wrap: break-word;
+            animation: fadeInMessage 0.3s ease;
+        }
+
+        @keyframes fadeInMessage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-bubble.sent {
+            align-self: flex-end;
+            background: var(--primary-gradient);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-bubble.received {
+            align-self: flex-start;
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .message-bubble.sent .message-time {
+            text-align: right;
+        }
+
+        /* Zone de Saisie */
+        .chat-input-zone {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .chat-textarea {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            resize: none;
+            max-height: 100px;
+            min-height: 44px;
+            transition: border-color 0.3s;
+        }
+
+        .chat-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-send {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 14px;
+            background: white;
+            border-radius: 16px;
+            width: fit-content;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* Scrollbar Custom */
+        .chat-messages-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages-area::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-messages-area::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+        }
+
+        /* Demo Info Box */
+        .demo-info {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto 24px;
+        }
+
+        .demo-info h2 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        .demo-info ul {
+            line-height: 1.8;
+        }
+
+        .demo-info code {
+            background: #f5f5f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-info">
+        <h2>🚀 Système de Chat Intégré</h2>
+        <p><strong>Ce widget de chat connecte automatiquement vos clients à votre page admin (messages.html)</strong></p>
+        
+        <h3>✨ Fonctionnalités :</h3>
+        <ul>
+            <li>💬 Chat en temps réel avec Supabase</li>
+            <li>🔔 Notifications pour nouveaux messages</li>
+            <li>👤 Identification du client au premier message</li>
+            <li>📱 Design responsive et moderne</li>
+            <li>⚡ Polling automatique toutes les 3 secondes</li>
+            <li>🎨 S'intègre parfaitement à votre boutique</li>
+        </ul>
+
+        <h3>🔧 Installation :</h3>
+        <ol>
+            <li>Copiez le code du widget dans votre fichier <code>oda.html</code></li>
+            <li>Le widget apparaîtra en bas à droite (au-dessus du bouton WhatsApp)</li>
+            <li>Les messages sont automatiquement synchronisés avec <code>messages.html</code></li>
+            <li>L'administrateur verra les conversations dans la page Messages</li>
+        </ol>
+
+        <p><strong>📌 Note :</strong> Le widget utilise la même base Supabase que votre système existant.</p>
+    </div>
+
+    <!-- Bouton Flottant -->
+    <button class="chat-float-btn" id="chatFloatBtn">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M8 10h8M8 14h6M20 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="chat-notification-badge" id="chatNotifBadge">0</span>
+    </button>
+
+    <!-- Widget de Chat -->
+    <div class="chat-widget" id="chatWidget">
+        <!-- En-tête -->
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-avatar">💬</div>
+                <div class="chat-header-text">
+                    <h3>Chat Support</h3>
+                    <div class="chat-status">
+                        <span class="status-dot"></span>
+                        <span id="chatStatusText">En ligne</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-close-chat" id="closeChatBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Formulaire d'Identification -->
+        <div class="chat-identification" id="chatIdentificationForm">
+            <div class="welcome-icon">👋</div>
+            <h3>Bienvenue !</h3>
+            <p>Comment souhaitez-vous être appelé ?</p>
+            <input type="text" 
+                   class="name-input" 
+                   id="chatUserName" 
+                   placeholder="Votre nom ou prénom" 
+                   maxlength="30">
+            <button class="btn-start-chat" id="startChatBtn">
+                Démarrer la conversation
+            </button>
+            <p class="privacy-note">
+                Vos messages seront envoyés directement à notre équipe support
+            </p>
+        </div>
+
+        <!-- Zone de Messages -->
+        <div class="chat-messages-container" id="chatMessagesContainer">
+            <div class="chat-messages-area" id="chatMessagesArea">
+                <!-- Messages dynamiques -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <!-- Zone de Saisie -->
+            <div class="chat-input-zone">
+                <div class="input-wrapper">
+                    <textarea class="chat-textarea" 
+                              id="chatMessageInput" 
+                              placeholder="Écrivez votre message..." 
+                              rows="1"></textarea>
+                    <button class="btn-send" id="sendChatMessageBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" 
+                                  stroke="currentColor" stroke-width="2" 
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const SUPABASE_URL = 'https://xjckbqbqxcwzcrlmuvzf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2ticWJxeGN3emNybG11dnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MTk1MzMsImV4cCI6MjA3NjA5NTUzM30.AMzAUwtjFt7Rvof5r2enMyYIYToc1wNWWEjvZqK_YXM';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==================== VARIABLES GLOBALES ====================
+        let clientName = localStorage.getItem('chat_client_name') || '';
+        let adminUserId = null;
+        let messages = [];
+        let pollingInterval = null;
+        let lastMessageCount = 0;
+
+        // ==================== INITIALISATION ====================
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('💬 Widget de chat initialisé');
+            
+            await recupererAdminUserId();
+            initialiserEvenements();
+            
+            if (clientName) {
+                demarrerChat();
+            }
+        });
+
+        // ==================== RÉCUPÉRATION ADMIN USER ID ====================
+        async function recupererAdminUserId() {
+            try {
+                // Récupérer le premier utilisateur admin (ou tous les admins)
+                const { data, error } = await supabase
+                    .from('conversations')
+                    .select('user_id')
+                    .limit(1)
+                    .single();
+
+                if (data && !error) {
+                    adminUserId = data.user_id;
+                    console.log('✅ Admin User ID récupéré:', adminUserId);
+                } else {
+                    console.warn('⚠️ Aucun admin trouvé, utilisation mode démo');
+                    // En mode démo, créer un UUID fictif
+                    adminUserId = 'demo-admin-id';
+                }
+            } catch (e) {
+                console.error('❌ Erreur récupération admin:', e);
+                adminUserId = 'demo-admin-id';
+            }
+        }
+
+        // ==================== ÉVÉNEMENTS ====================
+        function initialiserEvenements() {
+            // Toggle widget
+            document.getElementById('chatFloatBtn').onclick = () => {
+                const widget = document.getElementById('chatWidget');
+                widget.classList.toggle('active');
+                
+                if (widget.classList.contains('active') && clientName) {
+                    scrollToBottom();
+                    marquerMessagesCommeLus();
+                }
+            };
+
+            // Fermer widget
+            document.getElementById('closeChatBtn').onclick = () => {
+                document.getElementById('chatWidget').classList.remove('active');
+            };
+
+            // Démarrer conversation
+            document.getElementById('startChatBtn').onclick = async () => {
+                const nameInput = document.getElementById('chatUserName');
+                const name = nameInput.value.trim();
+                
+                if (!name) {
+                    nameInput.style.borderColor = '#FF3B30';
+                    setTimeout(() => nameInput.style.borderColor = '#e0e0e0', 2000);
+                    return;
+                }
+
+                clientName = name;
+                localStorage.setItem('chat_client_name', clientName);
+                
+                demarrerChat();
+                
+                // Message de bienvenue automatique
+                await envoyerMessageBienvenue();
+            };
+
+            // Envoyer message
+            document.getElementById('sendChatMessageBtn').onclick = envoyerMessage;
+            
+            // Enter pour envoyer (sans Shift)
+            document.getElementById('chatMessageInput').onkeypress = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    envoyerMessage();
+                }
+            };
+
+            // Auto-resize textarea
+            document.getElementById('chatMessageInput').oninput = (e) => {
+                e.target.style.height = 'auto';
+                const newHeight = Math.min(e.target.scrollHeight, 100);
+                e.target.style.height = newHeight + 'px';
+            };
+        }
+
+        // ==================== DÉMARRAGE CHAT ====================
+        function demarrerChat() {
+            document.getElementById('chatIdentificationForm').style.display = 'none';
+            document.getElementById('chatMessagesContainer').classList.add('active');
+            
+            chargerMessages();
+            demarrerPolling();
+        }
+
+        // ==================== MESSAGE DE BIENVENUE ====================
+        async function envoyerMessageBienvenue() {
+            const msgBienvenue = `Bonjour ! Je suis ${clientName}. J'aimerais obtenir des informations sur vos produits.`;
+            
+            try {
+                const { error } = await supabase
+                    .from('conversations')
+                    .insert({
+                        user_id: adminUserId,
+                        client_name: clientName,
+                        sender: 'client',
+                        message: msgBienvenue,
+                        read: false
+                    });
+
+                if (!error) {
+                    console.log('✅ Message de bienvenue envoyé');
+                    await chargerMessages();
+                }
+            } catch (e) {
+                console.error('❌ Erreur message bienvenue:', e);
+            }
+        }
+
+        // ==================== CHARGEMENT MESSAGES ====================
+        async function chargerMessages() {
+            if (!adminUserId || !clientName) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('conversations')
+                    .select('*')
+                    .eq('user_id', adminUserId)
+                    .eq('client_name', clientName)
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                messages = data || [];
+                afficherMessages();
+                
+                // Notifications pour nouveaux messages
+                const newCount = messages.filter(m => m.sender === 'admin' && !m.read).length;
+                if (newCount > lastMessageCount && lastMessageCount > 0) {
+                    afficherNotificationChat(newCount);
+                }
+                lastMessageCount = newCount;
+
+            } catch (e) {
+                console.error('❌ Erreur chargement messages:', e);
+            }
+        }
+
+        // ==================== AFFICHAGE MESSAGES ====================
+        function afficherMessages() {
+            const container = document.getElementById('chatMessagesArea');
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            container.innerHTML = '';
+            
+            if (messages.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #999; padding: 32px 16px;">
+                        <p style="font-size: 2rem; margin-bottom: 8px;">💬</p>
+                        <p>Envoyez votre premier message !</p>
+                    </div>
+                `;
+                return;
+            }
+
+            messages.forEach(msg => {
+                const bubble = document.createElement('div');
+                bubble.className = `message-bubble ${msg.sender === 'client' ? 'sent' : 'received'}`;
+                
+                bubble.innerHTML = `
+                    <div class="message-text">${msg.message}</div>
+                    <div class="message-time">${formaterHeure(msg.created_at)}</div>
+                `;
+                
+                container.appendChild(bubble);
+            });
+
+            container.appendChild(typingIndicator);
+            scrollToBottom();
+        }
+
+        // ==================== ENVOYER MESSAGE ====================
+        async function envoyerMessage() {
+            const input = document.getElementById('chatMessageInput');
+            const btn = document.getElementById('sendChatMessageBtn');
+            const texte = input.value.trim();
+
+            if (!texte || !clientName) return;
+
+            input.disabled = true;
+            btn.disabled = true;
+
+            try {
+                const { error } = await supabase
+                    .from('conversations')
+                    .insert({
+                        user_id: adminUserId,
+                        client_name: clientName,
+                        sender: 'client',
+                        message: texte,
+                        read: false
+                    });
+
+                if (error) throw error;
+
+                input.value = '';
+                input.style.height = '44px';
+                
+                await chargerMessages();
+                console.log('✅ Message envoyé');
+
+            } catch (e) {
+                console.error('❌ Erreur envoi message:', e);
+                alert('Erreur lors de l\'envoi du message');
+            } finally {
+                input.disabled = false;
+                btn.disabled = false;
+                input.focus();
+            }
+        }
+
+        // ==================== MARQUER COMME LU ====================
+        async function marquerMessagesCommeLus() {
+            if (!adminUserId || !clientName) return;
+
+            try {
+                await supabase
+                    .from('conversations')
+                    .update({ read: true })
+                    .eq('user_id', adminUserId)
+                    .eq('client_name', clientName)
+                    .eq('sender', 'admin')
+                    .eq('read', false);
+
+                // Réinitialiser le badge
+                const badge = document.getElementById('chatNotifBadge');
+                badge.style.display = 'none';
+                badge.textContent = '0';
+                lastMessageCount = 0;
+
+            } catch (e) {
+                console.error('❌ Erreur marquage lu:', e);
+            }
+        }
+
+        // ==================== POLLING ====================
+        function demarrerPolling() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            
+            pollingInterval = setInterval(async () => {
+                if (clientName) {
+                    await chargerMessages();
+                }
+            }, 3000); // Toutes les 3 secondes
+
+            console.log('✅ Polling démarré (3 secondes)');
+        }
+
+        // ==================== UTILITAIRES ====================
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessagesArea');
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        function formaterHeure(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleTimeString('fr-FR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+
+        function afficherNotificationChat(count) {
+            const badge = document.getElementById('chatNotifBadge');
+            badge.textContent = count;
+            badge.style.display = 'block';
+
+            // Son de notification (optionnel)
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIHmm98OihUBELTKXh8bllHgg3kdXy0HksBS1+zPLaizsKG2W58+yjTxELSKPf8bxnIQgzhM/y1YU2CAxfsu3p");
+                audio.play().catch(() => {});
+            } catch (e) {}
+        }
+
+        // ==================== NETTOYAGE ====================
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        });
+
+        console.log('%c💬 Widget de Chat Intégré', 'color: #667eea; font-size: 16px; font-weight: bold;');
+        console.log('%c✅ Prêt à recevoir des messages', 'color: #34C759; font-weight: bold;');
+    </script>
+</body

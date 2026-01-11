@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FF6B00">
+    <title>Paiement - Ma Boutique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="oda.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<style>
+/* ==================== VARIABLES ==================== */
+:root {
+    --primary-color: #FF6B00;
+    --primary-dark: #E55D00;
+    --mtn-yellow: #FFCC00;
+    --mtn-dark: #E6B800;
+    --orange-orange: #FF7900;
+    --orange-dark: #E66900;
+    --success-color: #10B981;
+    --error-color: #EF4444;
+    --text-primary: #1A1A1A;
+    --text-secondary: #6B7280;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F8F9FA;
+    --border-color: #E5E7EB;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* ==================== RESET ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==================== HEADER ==================== */
+.payment-header {
+    background: var(--bg-primary);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-back {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: none;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-back:active {
+    transform: scale(0.95);
+    background: var(--border-color);
+}
+
+.header-title {
+    flex: 1;
+}
+
+.header-title h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.header-title p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* ==================== CONTAINER ==================== */
+.payment-container {
+    flex: 1;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ==================== ORDER SUMMARY ==================== */
+.order-summary {
+    background: var(--bg-primary);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.summary-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+    padding-top: 16px;
+    margin-top: 8px;
+    border-top: 2px solid var(--border-color);
+}
+
+.summary-label {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.summary-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.summary-total {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* ==================== PAYMENT METHODS ==================== */
+.payment-methods {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    padding-left: 4px;
+}
+
+.payment-option {
+    background: var(--bg-primary);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-option:active {
+    transform: scale(0.98);
+}
+
+.payment-option.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+}
+
+.payment-option-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.payment-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.payment-icon.mtn {
+    background: linear-gradient(135deg, var(--mtn-yellow), var(--mtn-dark));
+}
+
+.payment-icon.orange {
+    background: linear-gradient(135deg, var(--orange-orange), var(--orange-dark));
+}
+
+.payment-info {
+    flex: 1;
+}
+
+.payment-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.payment-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.payment-radio {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.payment-option.selected .payment-radio {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+}
+
+.payment-option.selected .payment-radio::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+/* ==================== PAYMENT DETAILS ==================== */
+.payment-details {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+}
+
+.detail-value {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: monospace;
+}
+
+.ussd-code {
+    background: var(--bg-secondary);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-top: 12px;
+    text-align: center;
+}
+
+.ussd-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.ussd-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+}
+
+/* ==================== INSTRUCTIONS ==================== */
+.payment-instructions {
+    background: linear-gradient(135deg, rgba(255, 107, 0, 0.05), rgba(255, 107, 0, 0.1));
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.instructions-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.instruction-step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.instruction-step:last-child {
+    margin-bottom: 0;
+}
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.step-text {
+    flex: 1;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding-top: 4px;
+}
+
+/* ==================== ACTION BUTTONS ==================== */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    width: 100%;
+    padding: 16px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:active {
+    transform: scale(0.98);
+    background: var(--bg-secondary);
+}
+
+/* ==================== LOADING SPINNER ==================== */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ==================== SUCCESS MODAL ==================== */
+.success-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.success-modal.active {
+    display: flex;
+}
+
+.success-content {
+    background: var(--bg-primary);
+    border-radius: 24px;
+    padding: 40px 24px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--success-color), #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 24px;
+    box-shadow: var(--shadow-lg);
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.success-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.success-message {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* ==================== SECURITY BADGE ==================== */
+.security-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-primary);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.security-icon {
+    color: var(--success-color);
+    font-size: 1.2rem;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 480px) {
+    .payment-container {
+        padding: 16px;
+    }
+    
+    .payment-header {
+        padding: 12px 16px;
+    }
+    
+    .order-summary,
+    .payment-option,
+    .payment-instructions {
+        padding: 16px;
+    }
+    
+    .header-title h1 {
+        font-size: 1.1rem;
+    }
+    
+    .payment-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+    }
+    
+    .ussd-value {
+        font-size: 1.25rem;
+    }
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.payment-container > * {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.payment-container > *:nth-child(1) { animation-delay: 0.1s; }
+.payment-container > *:nth-child(2) { animation-delay: 0.2s; }
+.payment-container > *:nth-child(3) { animation-delay: 0.3s; }
+.payment-container > *:nth-child(4) { animation-delay: 0.4s; }
+</style>
+
+<body>
+    <!-- Header -->
+    <header class="payment-header">
+    <p>Choisissez votre mode de paiement</p>
+            </div>
+           <div class="header-content">
+            <button class="btn-back" id="btnBack" onclick="window.history.back()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <div class="header-title">
+                <h1>Paiement sécurisé</h1>
+            </div>
+    </header>
+
+   <!-- Remplacez la section "Méthodes de paiement" dans payement.html par ce code -->
+<!-- À partir de <div class="payment-methods"> jusqu'à </div> (fin de payment-methods) -->
+<!-- MTN Mobile Money -->
+    <div class="payment-option" data-method="mtn" id="mtnOption" style="display: none;">
+        <div class="payment-option-header">
+            <div class="payment-icon mtn">📱</div>
+            <div class="payment-info">
+                <div class="payment-name">MTN Mobile Money</div>
+                <div class="payment-desc">Paiement rapide et sécurisé</div>
+            </div>
+            <div class="payment-radio"></div>
+        </div>
+        <div class="payment-details" id="mtnDetails" style="display: none;">
+            <div class="detail-row">
+                <span class="detail-label">Compte marchand</span>
+                <span class="detail-value" id="mtnNom">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Numéro</span>
+                <span class="detail-value" id="mtnNumero">-</span>
+            </div>
+            <div class="ussd-code">
+                <div class="ussd-label">Code USSD</div>
+                <div class="ussd-value">*126#</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orange Money -->
+    <div class="payment-option" data-method="orange" id="orangeOption" style="display: none;">
+        <div class="payment-option-header">
+            <div class="payment-icon orange">🍊</div>
+            <div class="payment-info">
+                <div class="payment-name">Orange Money</div>
+                <div class="payment-desc">Transfert instantané</div>
+            </div>
+            <div class="payment-radio"></div>
+        </div>
+        <div class="payment-details" id="orangeDetails" style="display: none;">
+            <div class="detail-row">
+                <span class="detail-label">Compte marchand</span>
+                <span class="detail-value" id="orangeNom">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Numéro</span>
+                <span class="detail-value" id="orangeNumero">-</span>
+            </div>
+            <div class="ussd-code">
+                <div class="ussd-label">Code USSD</div>
+                <div class="ussd-value">#150#</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paiement à la livraison -->
+    <div class="payment-option" data-method="cash" id="cashOption" style="display: none;">
+        <div class="payment-option-header">
+            <div class="payment-icon" style="background: linear-gradient(135deg, #10B981, #059669);">💵</div>
+            <div class="payment-info">
+                <div class="payment-name">Paiement à la livraison</div>
+                <div class="payment-desc">Payez en espèces à la réception</div>
+            </div>
+            <div class="payment-radio"></div>
+        </div>
+        <div class="payment-details" id="cashDetails" style="display: none;">
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 16px; border-radius: 12px; border-left: 4px solid #10B981;">
+                <p style="color: var(--text-primary); font-size: 0.9rem; margin: 0;">
+                    ✓ Aucune configuration requise<br>
+                    💵 Préparez le montant exact<br>
+                    📦 Paiement au livreur
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+        <!-- Instructions -->
+        <div class="payment-instructions" id="instructions" style="display: none;">
+            <h3 class="instructions-title">
+                <span>💡</span>
+                <span>Instructions de paiement</span>
+            </h3>
+            <div id="instructionsContent"></div>
+        </div>
+
+        <!-- Badge sécurité -->
+        <div class="security-badge">
+            <span class="security-icon">🔒</span>
+            <span>Paiement 100% sécurisé</span>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="action-buttons">
+            <button class="btn-primary" id="btnLaunchUSSD" disabled>
+                <span id="btnText">Lancer le paiement</span>
+            </button>
+            <button class="btn-secondary" id="btnConfirm">
+                ✓ J'ai effectué le paiement
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal succès -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">Paiement confirmé !</h2>
+            <p class="success-message">
+                Votre commande a été enregistrée avec succès. 
+                Vous recevrez une confirmation par SMS/WhatsApp.
+            </p>
+            <button class="btn-primary" onclick="window.location.href='e-commerce2.html'">
+                Retour à la boutique
+            </button>
+        </div>
+    </div>
+
+<script type="module">
+    // ==================== CONFIGURATION SUPABASE ====================
+const SUPABASE_URL = 'https://xjckbqbqxcwzcrlmuvzf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2ticWJxeGN3emNybG11dnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MTk1MzMsImV4cCI6MjA3NjA5NTUzM30.AMzAUwtjFt7Rvof5r2enMyYIYToc1wNWWEjvZqK_YXM';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==================== VARIABLES GLOBALES ====================
+let selectedMethod = null;
+let orderData = {};
+let mobileMoneyConfig = {};
+let parametresConfig = {};
+
+// ==================== INITIALISATION ====================
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('💳 Page de paiement initialisée');
+    
+    chargerDonneesCommande();
+    chargerConfigurationPaiement();
+    initialiserEvenements();
+    
+    // Empêcher le retour arrière accidentel
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', function () {
+        window.history.pushState(null, '', window.location.href);
+        if (confirm('Voulez-vous vraiment annuler le paiement et retourner à la boutique ?')) {
+            sessionStorage.removeItem('commande_en_cours');
+            window.location.href = 'e-commerce2.html';
+        }
+    });
+});
+
+// ==================== CHARGEMENT DES DONNÉES ====================
+function chargerDonneesCommande() {
+    try {
+        const commandeStr = sessionStorage.getItem('commande_en_cours');
+        
+        if (!commandeStr) {
+            console.warn('⚠️ Aucune commande en cours trouvée');
+            afficherErreurCommande();
+            return;
+        }
+
+        orderData = JSON.parse(commandeStr);
+        console.log('✅ Données reçues:', orderData);
+        
+        if (!orderData.montantTotal || !orderData.client) {
+            console.error('❌ Données de commande incomplètes:', orderData);
+            afficherErreurCommande();
+            return;
+        }
+
+        console.log('✅ Commande chargée:', {
+            client: orderData.client.nom,
+            ville: orderData.ville,
+            total: orderData.montantTotal
+        });
+
+        afficherRecapitulatif();
+        
+    } catch (error) {
+        console.error('❌ Erreur chargement commande:', error);
+        afficherErreurCommande();
+    }
+}
+
+// ==================== AFFICHER RÉCAPITULATIF ====================
+function afficherRecapitulatif() {
+    console.log('📋 Affichage du récapitulatif...');
+    
+    const subtotal = orderData.sousTotal || 0;
+    const delivery = orderData.fraisLivraison || 0;
+    const total = orderData.montantTotal || 0;
+
+    // Créer le récapitulatif s'il n'existe pas
+    let summarySection = document.querySelector('.order-summary');
+    if (!summarySection) {
+        summarySection = document.createElement('div');
+        summarySection.className = 'order-summary';
+        const container = document.querySelector('.payment-container');
+        if (container) {
+            container.insertBefore(summarySection, container.firstChild);
+        }
+    }
+
+    summarySection.innerHTML = `
+        <h3 class="summary-title">Récapitulatif de la commande</h3>
+        <div class="summary-row">
+            <span class="summary-label">Sous-total</span>
+            <span class="summary-value">${formatPrice(subtotal)}</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Frais de livraison</span>
+            <span class="summary-value">${formatPrice(delivery)}</span>
+        </div>
+        <div class="summary-row">
+            <span class="summary-label">Total à payer</span>
+            <span class="summary-total">${formatPrice(total)}</span>
+        </div>
+    `;
+
+    // Mise à jour de l'en-tête
+    const headerTitle = document.querySelector('.header-title p');
+    if (headerTitle && orderData.client && orderData.ville) {
+        headerTitle.textContent = `Livraison à ${orderData.ville} - ${orderData.client.nom}`;
+    }
+
+    console.log('✅ Récapitulatif affiché:', { subtotal, delivery, total });
+}
+
+function afficherErreurCommande() {
+    const container = document.querySelector('.payment-container');
+    if (container) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🛒</div>
+                <h2 style="color: var(--text-primary); margin-bottom: 12px;">Aucune commande en cours</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Veuillez d'abord ajouter des produits au panier et passer une commande.
+                </p>
+                <button class="btn-primary" onclick="window.location.href='e-commerce2.html'">
+                    Retour à la boutique
+                </button>
+            </div>
+        `;
+    }
+}
+
+// ==================== CONFIGURATION PAIEMENT (CORRIGÉE) ====================
+async function chargerConfigurationPaiement() {
+    try {
+        console.log('💳 Chargement configuration paiement...');
+        
+        // Essayer plusieurs sources de configuration
+        let parametresConfig = null;
+        
+        // 1. Essayer localStorage avec clé générique
+        const paramsStr = localStorage.getItem('parametres_boutique');
+        if (paramsStr) {
+            parametresConfig = JSON.parse(paramsStr);
+            console.log('✅ Config trouvée dans localStorage (générique)');
+        }
+        
+        // 2. Essayer de récupérer depuis Supabase
+        if (!parametresConfig) {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    const { data, error } = await supabase
+                        .from('parametres_boutique')
+                        .select('config')
+                        .eq('user_id', session.user.id)
+                        .single();
+                    
+                    if (data && !error) {
+                        parametresConfig = data.config;
+                        console.log('✅ Config trouvée dans Supabase');
+                    }
+                }
+            } catch (error) {
+                console.log('⚠️ Pas de session utilisateur, recherche de config locale');
+            }
+        }
+        
+        // 3. Essayer toutes les clés localStorage qui commencent par 'parametres_'
+        if (!parametresConfig) {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('parametres_')) {
+                    const configStr = localStorage.getItem(key);
+                    if (configStr) {
+                        parametresConfig = JSON.parse(configStr);
+                        console.log('✅ Config trouvée dans localStorage:', key);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!parametresConfig) {
+            console.error('❌ Aucune configuration trouvée');
+            afficherAucuneMethodePaiement();
+            return;
+        }
+
+        const configPaiement = parametresConfig.paiement || {};
+        console.log('💳 Configuration paiement:', configPaiement);
+        
+        let methodeDisponible = false;
+
+        // ✅ MTN Money
+        if (configPaiement.mobile?.mtn?.actif && configPaiement.mobile.mtn.numero) {
+            mobileMoneyConfig.mtn = configPaiement.mobile.mtn;
+            document.getElementById('mtnNom').textContent = configPaiement.mobile.mtn.nomCompte || 'Marchand';
+            document.getElementById('mtnNumero').textContent = configPaiement.mobile.mtn.numero;
+            document.getElementById('mtnOption').style.display = 'block';
+            methodeDisponible = true;
+            console.log('✅ MTN Money activé:', configPaiement.mobile.mtn.numero);
+        }
+
+        // ✅ Orange Money
+        if (configPaiement.mobile?.orange?.actif && configPaiement.mobile.orange.numero) {
+            mobileMoneyConfig.orange = configPaiement.mobile.orange;
+            document.getElementById('orangeNom').textContent = configPaiement.mobile.orange.nomCompte || 'Marchand';
+            document.getElementById('orangeNumero').textContent = configPaiement.mobile.orange.numero;
+            document.getElementById('orangeOption').style.display = 'block';
+            methodeDisponible = true;
+            console.log('✅ Orange Money activé:', configPaiement.mobile.orange.numero);
+        }
+
+        // ✅ Paiement à la livraison
+        if (configPaiement.cash?.actif) {
+            document.getElementById('cashOption').style.display = 'block';
+            methodeDisponible = true;
+            console.log('✅ Paiement à la livraison activé');
+        }
+
+        if (!methodeDisponible) {
+            console.error('❌ Aucune méthode de paiement active');
+            afficherAucuneMethodePaiement();
+        } else {
+            console.log('✅ Méthodes de paiement disponibles');
+            
+            // Créer la section des méthodes si elle n'existe pas
+            let methodsSection = document.querySelector('.payment-methods');
+            if (!methodsSection) {
+                methodsSection = document.createElement('div');
+                methodsSection.className = 'payment-methods';
+                
+                const sectionTitle = document.createElement('h3');
+                sectionTitle.className = 'section-title';
+                sectionTitle.textContent = 'Méthodes de paiement';
+                
+                const container = document.querySelector('.payment-container');
+                const summary = document.querySelector('.order-summary');
+                if (container && summary) {
+                    methodsSection.appendChild(sectionTitle);
+                    container.insertBefore(methodsSection, summary.nextSibling);
+                }
+            }
+        }
+
+    } catch (error) {
+        console.error('❌ Erreur chargement configuration:', error);
+        afficherAucuneMethodePaiement();
+    }
+}
+
+function afficherAucuneMethodePaiement() {
+    const container = document.querySelector('.payment-container');
+    if (container) {
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; background: rgba(255, 59, 48, 0.1); border-radius: 16px; border: 2px solid rgba(255, 59, 48, 0.3); margin: 20px 0;">
+                <div style="font-size: 3rem; margin-bottom: 16px;">⚠️</div>
+                <h3 style="color: #EF4444; margin-bottom: 12px;">Aucune méthode de paiement disponible</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Le marchand n'a pas encore configuré de méthode de paiement.<br>
+                    Veuillez contacter le service client.
+                </p>
+                <button class="btn-secondary" onclick="window.location.href='e-commerce2.html'">
+                    Retour à la boutique
+                </button>
+            </div>
+        `;
+        container.appendChild(errorDiv);
+    }
+}
+
+// ==================== INITIALISER ÉVÉNEMENTS ====================
+function initialiserEvenements() {
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    paymentOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const method = this.getAttribute('data-method');
+            selectionnerMethodePaiement(method);
+        });
+    });
+
+    const btnLaunch = document.getElementById('btnLaunchUSSD');
+    if (btnLaunch) {
+        btnLaunch.addEventListener('click', lancerPaiement);
+    }
+
+    const btnConfirm = document.getElementById('btnConfirm');
+    if (btnConfirm) {
+        btnConfirm.addEventListener('click', confirmerPaiement);
+    }
+
+    console.log('✅ Événements initialisés');
+}
+
+// ==================== SÉLECTION MÉTHODE ====================
+function selectionnerMethodePaiement(method) {
+    console.log('💳 Méthode sélectionnée:', method);
+    selectedMethod = method;
+
+    const allOptions = document.querySelectorAll('.payment-option');
+    allOptions.forEach(opt => {
+        opt.classList.remove('selected');
+        const details = opt.querySelector('.payment-details');
+        if (details) details.style.display = 'none';
+    });
+
+    const selectedOption = document.querySelector(`.payment-option[data-method="${method}"]`);
+    if (selectedOption) {
+        selectedOption.classList.add('selected');
+        const details = selectedOption.querySelector('.payment-details');
+        if (details) details.style.display = 'block';
+    }
+
+    const btnLaunch = document.getElementById('btnLaunchUSSD');
+    if (btnLaunch) {
+        btnLaunch.disabled = false;
+        if (method === 'cash') {
+            btnLaunch.innerHTML = '<span>✓ Confirmer la commande</span>';
+        } else {
+            btnLaunch.innerHTML = '<span>📱 Lancer le paiement</span>';
+        }
+    }
+
+    afficherInstructions(method);
+}
+
+// ==================== INSTRUCTIONS ====================
+function afficherInstructions(method) {
+    const instructionsDiv = document.getElementById('instructions');
+    const instructionsContent = document.getElementById('instructionsContent');
+    
+    if (!instructionsDiv || !instructionsContent) return;
+
+    let instructions = '';
+
+    if (method === 'mtn') {
+        instructions = `
+            <div class="instruction-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Composez *126# sur votre téléphone MTN</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Sélectionnez "Transfert d'argent"</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Entrez le numéro du marchand ci-dessus</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Entrez le montant: ${formatPrice(orderData.montantTotal)}</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Confirmez avec votre code PIN</div>
+            </div>
+        `;
+    } else if (method === 'orange') {
+        instructions = `
+            <div class="instruction-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Composez #150# sur votre téléphone Orange</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Sélectionnez "Transfert d'argent"</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Entrez le numéro du marchand ci-dessus</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Entrez le montant: ${formatPrice(orderData.montantTotal)}</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">5</div>
+                <div class="step-text">Confirmez avec votre code secret</div>
+            </div>
+        `;
+    } else if (method === 'cash') {
+        instructions = `
+            <div class="instruction-step">
+                <div class="step-number">1</div>
+                <div class="step-text">Préparez le montant exact: ${formatPrice(orderData.montantTotal)}</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">2</div>
+                <div class="step-text">Le livreur vous contactera avant la livraison</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">3</div>
+                <div class="step-text">Payez en espèces lors de la réception</div>
+            </div>
+            <div class="instruction-step">
+                <div class="step-number">4</div>
+                <div class="step-text">Vérifiez votre commande avant de payer</div>
+            </div>
+        `;
+    }
+
+    instructionsContent.innerHTML = instructions;
+    instructionsDiv.style.display = 'block';
+}
+
+// ==================== LANCER PAIEMENT ====================
+function lancerPaiement() {
+    if (!selectedMethod) {
+        alert('⚠️ Veuillez sélectionner une méthode de paiement');
+        return;
+    }
+
+    if (selectedMethod === 'cash') {
+        confirmerPaiement();
+    } else if (selectedMethod === 'mtn') {
+        const numero = mobileMoneyConfig.mtn?.numero;
+        const montant = orderData.montantTotal;
+        alert(`📱 Instructions MTN Money:\n\n1. Composez *126# sur votre téléphone\n2. Sélectionnez "Transfert d'argent"\n3. Destinataire: ${numero}\n4. Montant: ${formatPrice(montant)}\n5. Confirmez avec votre PIN\n\nAprès le paiement, cliquez sur "J'ai effectué le paiement"`);
+    } else if (selectedMethod === 'orange') {
+        const numero = mobileMoneyConfig.orange?.numero;
+        const montant = orderData.montantTotal;
+        alert(`🍊 Instructions Orange Money:\n\n1. Composez #150# sur votre téléphone\n2. Sélectionnez "Transfert d'argent"\n3. Destinataire: ${numero}\n4. Montant: ${formatPrice(montant)}\n5. Confirmez avec votre code secret\n\nAprès le paiement, cliquez sur "J'ai effectué le paiement"`);
+    }
+}
+
+// ==================== CONFIRMER PAIEMENT ====================
+async function confirmerPaiement() {
+    if (!selectedMethod) {
+        alert('⚠️ Veuillez sélectionner une méthode de paiement');
+        return;
+    }
+    
+    const btn = document.getElementById('btnConfirm');
+    const originalText = btn.innerHTML;
+    
+    try {
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner"></div><span>Confirmation...</span>';
+        
+        const commandeData = {
+            client_nom: orderData.client?.nom || 'Client',
+            client_email: orderData.client?.email || '',
+            client_telephone: orderData.client?.tel || '',
+            adresse_livraison: orderData.adresseLivraison || '',
+            ville: orderData.ville || '',
+            commentaire: orderData.commentaire || '',
+            produits_data: orderData.produits || [],
+            montant_total: orderData.montantTotal || 0,
+            frais_livraison: orderData.fraisLivraison || 0,
+            methode_paiement: selectedMethod === 'mtn' ? 'MTN Mobile Money' : 
+                              selectedMethod === 'orange' ? 'Orange Money' : 
+                              'Paiement à la livraison',
+            statut: 'pending',
+            numero: `#${Date.now()}`,
+            user_id: await getUserId()
+        };
+        
+        console.log('📤 Envoi de la commande:', commandeData);
+        
+        const { data, error } = await supabase
+            .from('commandes')
+            .insert([commandeData])
+            .select();
+        
+        if (error) throw error;
+        
+        console.log('✅ Commande enregistrée:', data);
+        
+        await nettoyerPanier();
+        afficherSuccesCommande(data[0]);
+        
+    } catch (error) {
+        console.error('❌ Erreur confirmation:', error);
+        alert(`❌ Erreur lors de la confirmation.\n\nDétails: ${error.message}\n\nVeuillez réessayer.`);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+async function getUserId() {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        return session ? session.user.id : null;
+    } catch (error) {
+        console.warn('Erreur récupération utilisateur:', error);
+        return null;
+    }
+}
+
+async function nettoyerPanier() {
+    try {
+        sessionStorage.removeItem('commande_en_cours');
+        localStorage.removeItem('panier_ecommerce');
+        console.log('✅ Panier nettoyé');
+    } catch (error) {
+        console.error('⚠️ Erreur nettoyage:', error);
+    }
+}
+
+function afficherSuccesCommande(commande) {
+    const successModal = document.getElementById('successModal');
+    const successContent = successModal?.querySelector('.success-content');
+    
+    if (successContent) {
+        const methodeName = selectedMethod === 'mtn' ? 'MTN Mobile Money' :
+                           selectedMethod === 'orange' ? 'Orange Money' :
+                           'Paiement à la livraison';
+        
+        successContent.innerHTML = `
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">Commande confirmée !</h2>
+            <p class="success-message">Votre commande a été enregistrée avec succès.</p>
+            
+            <div style="background: var(--bg-secondary); padding: 16px; border-radius: 12px; margin: 20px 0; text-align: left;">
+                <h4 style="margin-bottom: 12px; color: var(--text-primary);">📋 Détails</h4>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Montant total</span>
+                    <span style="font-weight: 700; color: var(--primary-color);">${formatPrice(orderData.montantTotal)}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Paiement</span>
+                    <span style="font-weight: 600;">${methodeName}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">Livraison</span>
+                    <span style="font-weight: 600;">${orderData.ville}</span>
+                </div>
+            </div>
+            
+            <div style="background: rgba(16, 185, 129, 0.1); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+                    📱 Vous recevrez une confirmation par SMS/WhatsApp
+                </p>
+            </div>
+            
+            <button class="btn-primary" onclick="window.location.href='e-commerce2.html'">
+                Retour à la boutique
+            </button>
+        `;
+    }
+    
+    if (successModal) {
+        successModal.classList.add('active');
+    }
+}
+
+// ==================== UTILITAIRES ====================
+function formatPrice(price) {
+    if (!price && price !== 0) return '0 FCFA';
+    return new Intl.NumberFormat('fr-FR', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(price) + ' FCFA';
+}
+
+console.log('✅ Script Paiement chargé et prêt');
+</script>
+</body>
+</html>
+            

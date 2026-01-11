@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques - Ma Boutique Élégante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="oda.jpg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="styles-stats.css">
+</head>
+<style>
+    /* ==================== VARIABLES ==================== */
+:root {
+    --primary-color: #007AFF;
+    --secondary-color: #5856D6;
+    --success-color: #34C759;
+    --warning-color: #FF9500;
+    --danger-color: #FF3B30;
+    --bg-primary: #F5F5F7;
+    --bg-secondary: #FFFFFF;
+    --text-primary: #1D1D1F;
+    --text-secondary: #6E6E73;
+    --border-color: #D2D2D7;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ==================== HEADER ==================== */
+.main-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.hamburger-btn {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn:hover {
+    background: var(--bg-primary);
+}
+
+.hamburger-btn span {
+    width: 100%;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-image {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-primary);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+    background: var(--border-color);
+    transform: translateY(-2px);
+}
+
+.badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--danger-color);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 6px;
+    background: var(--bg-primary);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.user-profile:hover {
+    background: var(--border-color);
+}
+
+.avatar-image {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--success-color), var(--primary-color));
+    border-radius: 50%;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* ==================== MENU HAMBURGER ==================== */
+.hamburger-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.hamburger-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.hamburger-menu {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 280px;
+    height: 100vh;
+    height: 100dvh; /* Pour mobile */
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-lg);
+    z-index: 1999;
+    transition: left 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.hamburger-menu.active {
+    left: 0;
+}
+
+.hamburger-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-menu {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-menu:hover {
+    background: var(--border-color);
+    transform: rotate(90deg);
+}
+
+.hamburger-nav {
+    flex: 1;
+    padding: 16px;
+}
+
+.hamburger-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    text-decoration: none;
+    color: var(--text-primary);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+}
+
+.hamburger-link:hover {
+    background: var(--bg-primary);
+    transform: translateX(4px);
+}
+
+.hamburger-link.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.link-icon {
+    font-size: 1.25rem;
+}
+
+.hamburger-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 12px 0;
+}
+
+.hamburger-footer {
+    padding: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ==================== CONTAINER STATISTIQUES ==================== */
+.stats-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+/* ==================== CARTES STATISTIQUES ==================== */
+.cards-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card-title {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.card-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* ==================== GRAPHIQUES ==================== */
+.graphs-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.graph-card {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.graph-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 300px;
+}
+
+canvas {
+    max-width: 100%;
+    height: 100% !important;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 968px) {
+    .graphs-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-container {
+        padding: 12px 16px;
+    }
+
+    .brand-name {
+        font-size: 1rem;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .stats-container {
+        padding: 20px 16px;
+    }
+
+    .cards-section {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .stat-card {
+        padding: 20px;
+    }
+
+    .card-value {
+        font-size: 1.75rem;
+    }
+
+    .graph-card {
+        padding: 20px;
+    }
+
+    .chart-wrapper {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-image {
+        width: 32px;
+        height: 32px;
+    }
+
+    .brand-name {
+        font-size: 0.9rem;
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+    }
+
+    .card-value {
+        font-size: 1.5rem;
+    }
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card {
+    animation: slideInUp 0.5s ease;
+}
+
+.graph-card {
+    animation: slideInUp 0.6s ease;
+}
+</style>
+<body>
+    <!-- Menu Hamburger Overlay -->
+    <div class="hamburger-overlay" id="hamburgerOverlay"></div>
+    
+    <!-- Menu Hamburger -->
+    <div class="hamburger-menu" id="hamburgerMenu">
+        <div class="hamburger-header">
+            <div class="brand-section">
+                <div class="logo-image"></div>
+                <h1 class="brand-name">ODA</h1>
+            </div>
+            <button class="close-menu" id="closeMenu">
+                <span>×</span>
+            </button>
+        </div>
+        
+        <nav class="hamburger-nav">
+            <a href="tableau.html" class="hamburger-link">
+                <span class="link-icon">📊</span>
+                <span>Tableau de bord</span>
+            </a>
+            <a href="produit.html" class="hamburger-link">
+                <span class="link-icon">📦</span>
+                <span>Produits</span>
+            </a>
+            <a href="commandes.html" class="hamburger-link">
+                <span class="link-icon">📋</span>
+                <span>Commandes</span>
+            </a>
+            <a href="clients.html" class="hamburger-link">
+                <span class="link-icon">👥</span>
+                <span>Clients</span>
+            </a>
+            <a href="messages.html" class="hamburger-link">
+                <span class="link-icon">💬</span>
+                <span>Messages</span>
+            </a>
+            
+            <div class="hamburger-divider"></div>
+            
+            <a href="statitique.html" class="hamburger-link">
+                <span class="link-icon">📊</span>
+                <span>Statistiques</span>
+            </a>
+            <a href="parametres.html" class="hamburger-link">
+                <span class="link-icon">⚙️</span>
+                <span>Paramètres</span>
+            </a>
+            <a href="boutique.html" class="hamburger-link">
+                <span class="link-icon">🪟</span>
+                <span>Voir ma boutique</span>
+            </a>
+        </nav>
+        
+        <a href="https://whatsapp.com/channel/0029Vb6mcUm5q08htMMdVA2v" class="hamburger-link">
+            <span class="link-icon">✆</span>
+            <span>Rejoindre notre chaine</span>
+        </a>
+        <a href="https://t.me/+hqymnTrseaU2OWRk" class="hamburger-link">
+            <span class="link-icon">🗩</span>
+            <span>rejoindre notre groupe telegram</span>
+        </a>
+    </div>
+
+    <header class="main-header">
+        <div class="header-container">
+            <button class="hamburger-btn" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="brand-section">
+                <div class="logo-image"></div>
+                <h1 class="brand-name">Statistiques - Ma Boutique</h1>
+            </div>
+
+            <div class="header-actions">
+                <button class="icon-btn notification-btn">
+                    <span>🔔</span>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar-image"></div>
+                    <span class="user-name">Admin</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="stats-container">
+        <!-- Cartes statistiques -->
+        <section class="cards-section">
+            <div class="stat-card">
+                <div class="card-icon" style="background: linear-gradient(135deg, #007AFF, #00C7BE);">📦</div>
+                <div class="card-content">
+                    <div class="card-title">Total Produits</div>
+                    <div class="card-value" id="totalProduits">0</div>
+                    <div class="card-subtitle" id="produitsSubtitle">Chargement...</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="card-icon" style="background: linear-gradient(135deg, #34C759, #00E396);">🛍️</div>
+                <div class="card-content">
+                    <div class="card-title">Total Ventes</div>
+                    <div class="card-value" id="totalVentes">0</div>
+                    <div class="card-subtitle" id="ventesSubtitle">Chargement...</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="card-icon" style="background: linear-gradient(135deg, #FF9500, #FF6482);">💰</div>
+                <div class="card-content">
+                    <div class="card-title">Revenu Total</div>
+                    <div class="card-value" id="revenuTotal">0</div>
+                    <div class="card-subtitle">FCFA</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Graphiques -->
+        <section class="graphs-section">
+            <div class="graph-card">
+                <h2 class="graph-title">📊 Ventes par catégorie</h2>
+                <div class="chart-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="graph-card">
+                <h2 class="graph-title">🥧 Répartition produits</h2>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script type="module">
+        // ==================== CONFIGURATION SUPABASE ====================
+const SUPABASE_URL = 'https://xjckbqbqxcwzcrlmuvzf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2ticWJxeGN3emNybG11dnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MTk1MzMsImV4cCI6MjA3NjA5NTUzM30.AMzAUwtjFt7Rvof5r2enMyYIYToc1wNWWEjvZqK_YXM';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==================== VARIABLES GLOBALES ====================
+let produits = [];
+let commandes = [];
+let clients = [];
+let currentUser = null;
+let barChart, pieChart;
+
+// ==================== INITIALISATION ====================
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('📊 Initialisation des statistiques...');
+    
+    // Vérifier l'authentification
+    await verifierAuthentification();
+    
+    // Initialiser le menu hamburger
+    initialiserMenuHamburger();
+    
+    // Ajouter le bouton de déconnexion
+    //ajouterBoutonDeconnexion();
+    
+    // Charger les données
+    await chargerDonnees();
+    
+    // Calculer et afficher les statistiques
+    calculerStatistiques();
+    
+    // Initialiser les graphiques
+    setTimeout(() => {
+        initCharts();
+    }, 500);
+});
+
+// ==================== AUTHENTIFICATION ====================
+async function verifierAuthentification() {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (!session) {
+            console.warn('⚠️ Pas de session active');
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        currentUser = session.user;
+        console.log('✅ Utilisateur connecté:', currentUser.email);
+        
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+            userNameElement.textContent = currentUser.email.split('@')[0];
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur authentification:', error);
+        window.location.href = 'index.html';
+    }
+}
+
+function ajouterBoutonDeconnexion() {
+    const userProfile = document.querySelector('.user-profile');
+    if (!userProfile) return;
+    
+    const logoutBtn = document.createElement('button');
+    logoutBtn.textContent = '🚪 Déconnexion';
+    logoutBtn.style.cssText = `
+        margin-left: 15px;
+        padding: 8px 16px;
+        background: #FF3B30;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    `;
+    
+    logoutBtn.addEventListener('mouseover', () => {
+        logoutBtn.style.background = '#CC2F26';
+    });
+    
+    logoutBtn.addEventListener('mouseout', () => {
+        logoutBtn.style.background = '#FF3B30';
+    });
+    
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            const confirmer = confirm('Voulez-vous vraiment vous déconnecter ?');
+            if (!confirmer) return;
+            
+            logoutBtn.disabled = true;
+            logoutBtn.textContent = '⏳ Déconnexion...';
+            
+            const { error } = await supabase.auth.signOut();
+            
+            if (error) throw error;
+            
+            console.log('✅ Déconnexion réussie');
+            afficherNotification('✅ Déconnexion réussie', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'connexion.html';
+            }, 500);
+            
+        } catch (error) {
+            console.error('❌ Erreur déconnexion:', error);
+            afficherNotification('❌ Erreur lors de la déconnexion', 'error');
+            logoutBtn.disabled = false;
+            logoutBtn.textContent = '🚪 Déconnexion';
+        }
+    });
+    
+    userProfile.appendChild(logoutBtn);
+}
+
+// ==================== MENU HAMBURGER ====================
+function initialiserMenuHamburger() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const hamburgerOverlay = document.getElementById('hamburgerOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+    
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', () => {
+            const isOpening = !hamburgerMenu?.classList.contains('active');
+            
+            hamburgerBtn.classList.toggle('active');
+            hamburgerMenu?.classList.toggle('active');
+            hamburgerOverlay?.classList.toggle('active');
+            
+            if (isOpening) {
+                // Bloquer le scroll du body
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                document.body.style.top = `-${window.scrollY}px`;
+            } else {
+                // Débloquer le scroll
+                const scrollY = document.body.style.top;
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+                document.body.style.top = '';
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
+        });
+    }
+    
+    const fermerMenu = () => {
+        hamburgerBtn?.classList.remove('active');
+        hamburgerMenu?.classList.remove('active');
+        hamburgerOverlay?.classList.remove('active');
+        
+        // Débloquer le scroll
+        const scrollY = document.body.style.top;
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    };
+    
+    if (closeMenu) {
+        closeMenu.addEventListener('click', fermerMenu);
+    }
+    
+    if (hamburgerOverlay) {
+        hamburgerOverlay.addEventListener('click', fermerMenu);
+    }
+    
+    // Empêcher le scroll à travers le menu
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('touchmove', (e) => {
+            e.stopPropagation();
+        }, { passive: false });
+    }
+    
+    const hamburgerLinks = document.querySelectorAll('.hamburger-link');
+    hamburgerLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            setTimeout(fermerMenu, 300);
+        });
+    });
+    
+    console.log('✅ Menu hamburger initialisé');
+}
+
+// ==================== CHARGEMENT DES DONNÉES ====================
+async function chargerDonnees() {
+    console.log('📦 Chargement des données depuis Supabase...');
+    
+    if (!currentUser) {
+        console.warn('⚠️ Aucun utilisateur connecté');
+        return;
+    }
+    
+    try {
+        // Charger les produits
+        const { data: produitsData, error: produitsError } = await supabase
+            .from('produits')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+
+        if (produitsError) throw produitsError;
+        
+        produits = produitsData || [];
+        console.log(`✅ ${produits.length} produit(s) chargé(s)`);
+        
+        // Charger les commandes
+        const { data: commandesData, error: commandesError } = await supabase
+            .from('commandes')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+
+        if (commandesError && commandesError.code !== 'PGRST116') {
+            console.error('❌ Erreur commandes:', commandesError);
+        }
+        
+        commandes = commandesData || [];
+        console.log(`✅ ${commandes.length} commande(s) chargée(s)`);
+        
+        // Charger les clients
+        const { data: clientsData, error: clientsError } = await supabase
+            .from('clients')
+            .select('*')
+            .eq('user_id', currentUser.id);
+
+        if (clientsError && clientsError.code !== 'PGRST116') {
+            console.error('❌ Erreur clients:', clientsError);
+        }
+        
+        clients = clientsData || [];
+        console.log(`✅ ${clients.length} client(s) chargé(s)`);
+        
+    } catch (error) {
+        console.error('❌ Erreur chargement données:', error);
+        afficherNotification('❌ Erreur lors du chargement des données', 'error');
+    }
+}
+
+// ==================== CALCUL DES STATISTIQUES ====================
+function calculerStatistiques() {
+    console.log('📊 Calcul des statistiques...');
+    
+    const totalProduits = produits.length;
+    const produitsPublies = produits.filter(p => p.statut === 'published').length;
+    const totalVentes = commandes.length;
+    const ventesLivrees = commandes.filter(c => c.statut === 'delivered' || c.statut === 'livree').length;
+    
+    let revenuTotal = 0;
+    commandes.forEach(cmd => {
+        if (cmd.statut !== 'cancelled' && cmd.statut !== 'annulee') {
+            revenuTotal += cmd.montant_total || cmd.montant || 0;
+        }
+    });
+    
+    console.log('📈 Statistiques calculées:');
+    console.log(`  • Total produits: ${totalProduits}`);
+    console.log(`  • Produits publiés: ${produitsPublies}`);
+    console.log(`  • Total ventes: ${totalVentes}`);
+    console.log(`  • Ventes livrées: ${ventesLivrees}`);
+    console.log(`  • Revenu total: ${revenuTotal.toLocaleString('fr-FR')} FCFA`);
+    
+    // Mise à jour de l'interface
+    const totalProduitsEl = document.getElementById('totalProduits');
+    const totalVentesEl = document.getElementById('totalVentes');
+    const revenuTotalEl = document.getElementById('revenuTotal');
+    const produitsSubtitleEl = document.getElementById('produitsSubtitle');
+    const ventesSubtitleEl = document.getElementById('ventesSubtitle');
+    
+    if (totalProduitsEl) {
+        animerCompteur('totalProduits', totalProduits);
+    }
+    
+    if (totalVentesEl) {
+        animerCompteur('totalVentes', totalVentes);
+    }
+    
+    if (revenuTotalEl) {
+        animerCompteur('revenuTotal', revenuTotal, true);
+    }
+    
+    if (produitsSubtitleEl) {
+        produitsSubtitleEl.textContent = `${produitsPublies} publiés`;
+    }
+    
+    if (ventesSubtitleEl) {
+        ventesSubtitleEl.textContent = `${ventesLivrees} livrées`;
+    }
+}
+
+function animerCompteur(elementId, target, isRevenu = false) {
+    const element = document.getElementById(elementId);
+    if (!element || target === 0) {
+        if (element) {
+            element.textContent = isRevenu ? '0' : '0';
+        }
+        return;
+    }
+    
+    const duration = 2000;
+    const frameDuration = 1000 / 60;
+    const totalFrames = Math.round(duration / frameDuration);
+    const increment = target / totalFrames;
+    
+    let currentValue = 0;
+    let frame = 0;
+    
+    const animate = () => {
+        frame++;
+        currentValue += increment;
+        
+        if (frame < totalFrames) {
+            if (isRevenu) {
+                element.textContent = Math.floor(currentValue).toLocaleString('fr-FR');
+            } else {
+                element.textContent = Math.floor(currentValue).toString();
+            }
+            requestAnimationFrame(animate);
+        } else {
+            if (isRevenu) {
+                element.textContent = target.toLocaleString('fr-FR');
+            } else {
+                element.textContent = target.toString();
+            }
+        }
+    };
+    
+    requestAnimationFrame(animate);
+}
+// ==================== INITIALISATION DES GRAPHIQUES ====================
+function initCharts() {
+    console.log('📈 Initialisation des graphiques...');
+    
+    const colors = {
+        blue: '#007AFF',
+        purple: '#5856D6',
+        green: '#34C759',
+        orange: '#FF9500',
+        red: '#FF3B30',
+        pink: '#FF2D55',
+        teal: '#00C7BE',
+        indigo: '#5AC8FA'
+    };
+
+    // Calculer les données par catégorie
+    const categories = {};
+    produits.forEach(produit => {
+        const cat = produit.categorie || 'Autre';
+        categories[cat] = (categories[cat] || 0) + 1;
+    });
+
+    const categoriesLabels = Object.keys(categories);
+    const categoriesData = Object.values(categories);
+    
+    console.log('📊 Données des graphiques:');
+    console.log('  • Catégories:', categories);
+    
+    const ctxBar = document.getElementById('barChart');
+    const ctxPie = document.getElementById('pieChart');
+    
+    if (!ctxBar || !ctxPie) {
+        console.error('❌ Canvas introuvables');
+        return;
+    }
+    
+    // Graphique en barres
+    barChart = new Chart(ctxBar.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: categoriesLabels.length > 0 ? categoriesLabels : ['Aucune donnée'],
+            datasets: [{
+                label: 'Nombre de produits',
+                data: categoriesData.length > 0 ? categoriesData : [0],
+                backgroundColor: createGradient(ctxBar.getContext('2d'), colors.blue, colors.purple),
+                borderRadius: 10,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            family: 'Poppins',
+                            size: 12,
+                            weight: '500'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(29, 29, 31, 0.95)',
+                    padding: 12,
+                    cornerRadius: 8,
+                    titleFont: {
+                        family: 'Poppins',
+                        size: 13,
+                        weight: '600'
+                    },
+                    bodyFont: {
+                        family: 'Poppins',
+                        size: 12
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { 
+                        stepSize: 1,
+                        font: {
+                            family: 'Poppins',
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            family: 'Poppins',
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+    
+    // Graphique circulaire
+    const pieColors = [
+        colors.blue,
+        colors.green,
+        colors.orange,
+        colors.purple,
+        colors.red,
+        colors.teal,
+        colors.pink,
+        colors.indigo
+    ];
+    
+    pieChart = new Chart(ctxPie.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: categoriesLabels.length > 0 ? categoriesLabels : ['Aucune donnée'],
+            datasets: [{
+                data: categoriesData.length > 0 ? categoriesData : [1],
+                backgroundColor: pieColors.slice(0, categoriesLabels.length || 1),
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            family: 'Poppins',
+                            size: 11,
+                            weight: '500'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(29, 29, 31, 0.95)',
+                    padding: 12,
+                    cornerRadius: 8,
+                    titleFont: {
+                        family: 'Poppins',
+                        size: 13,
+                        weight: '600'
+                    },
+                    bodyFont: {
+                        family: 'Poppins',
+                        size: 12
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+    
+    console.log('✅ Graphiques créés avec succès');
+}
+
+function createGradient(ctx, color1, color2) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, color1);
+    gradient.addColorStop(1, color2);
+    return gradient;
+}
+
+// ==================== NOTIFICATIONS ====================
+function afficherNotification(message, type = 'info') {
+    let conteneur = document.getElementById('notification-container');
+
+    if (!conteneur) {
+        conteneur = document.createElement('div');
+        conteneur.id = 'notification-container';
+        conteneur.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        `;
+        document.body.appendChild(conteneur);
+    }
+
+    const couleurs = {
+        success: '#34C759',
+        error: '#FF3B30',
+        info: '#007AFF',
+        warning: '#FF9500'
+    };
+
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        background: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid ${couleurs[type]};
+        animation: slideIn 0.5s ease;
+        max-width: 350px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        color: #1D1D1F;
+    `;
+    notification.textContent = message;
+
+    conteneur.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
+}
+
+// ==================== ANIMATIONS CSS ====================
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        to {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+`;
+document.head.appendChild(style);
+
+// ==================== GESTION DES ERREURS GLOBALES ====================
+window.addEventListener('error', (e) => {
+    console.error('❌ Erreur globale:', e.error);
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+    console.error('❌ Promise rejetée:', e.reason);
+});
+
+// ==================== LOG ====================
+console.log('%c📊 Page Statistiques - Ma Boutique Élégante', 'color: #007AFF; font-size: 18px; font-weight: bold;');
+console.log('%c✅ Système de statistiques avec Supabase', 'color: #34C759; font-size: 14px; font-weight: 500;');
+console.log('%c✨ Design moderne et responsive', 'color: #FF9500; font-size: 14px; font-weight: 500;');
+    </script>
+    
+</body>
+</html>

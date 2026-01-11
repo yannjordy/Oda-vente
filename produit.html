@@ -1,0 +1,2915 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits - Ma Boutique Élégante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="oda.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="produits-styles.css">
+</head>
+<style>
+    :root {
+    --primary-color: #007AFF;
+    --primary-hover: #0056b3;
+    --secondary-color: #E8F4FF;
+    --accent-color: #34C759;
+    --bg-general: #F5F5F7;
+    --bg-card: #FFFFFF;
+    --text-primary: #1D1D1F;
+    --text-secondary: #86868B;
+    --border-color: #D2D2D7;
+    --success: #34C759;
+    --warning: #FF9500;
+    --error: #FF3B30;
+    --gradient-primary: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%);
+    --gradient-soft: linear-gradient(135deg, #E8F4FF 0%, #F5F5F7 100%);
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.16);
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --transition-fast: 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-general);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+/* ==================== HEADER ==================== */
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-light);
+    z-index: 1000;
+    animation: slideDown var(--transition-fast);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.logo-image {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.brand-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.icon-btn {
+    position: relative;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.notification-btn .badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #FF3B30;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-xl);
+    background: var(--gradient-soft);
+    cursor: pointer;
+}
+
+.avatar-image {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    border: 2px solid var(--primary-color);
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* ==================== SIDEBAR GAUCHE (VERSION PC) ==================== */
+.sidebar-left {
+    position: fixed;
+    left: 0;
+    top: 80px;
+    width: 280px;
+    height: calc(100vh - 80px);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-light);
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.action-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.btn-new-product {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.btn-new-product:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.kpi-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.kpi-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--gradient-soft);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+    transition: var(--transition-fast);
+}
+
+.kpi-card:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-light);
+}
+
+.kpi-icon {
+    font-size: 2rem;
+}
+
+.kpi-content {
+    flex: 1;
+}
+
+.kpi-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.kpi-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Navigation sidebar */
+.sidebar-nav {
+    margin-top: var(--spacing-lg);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+    margin-bottom: var(--spacing-xs);
+}
+
+.nav-link:hover {
+    background: var(--gradient-soft);
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.nav-link.active {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.nav-icon {
+    font-size: 1.3rem;
+}
+
+.nav-divider {
+    height: 2px;
+    background: var(--secondary-color);
+    margin: var(--spacing-md) 0;
+}
+
+/* Ajuster le contenu principal pour la sidebar */
+.products-container {
+    margin-left: 280px;
+    transition: margin-left var(--transition-fast);
+}
+
+
+/* ==================== BOUTON HAMBURGER - CORRIGÉ ==================== */
+.hamburger-btn {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 10001;
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    position: relative;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn:hover span {
+    background: var(--primary-hover);
+}
+
+.hamburger-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* ==================== OVERLAY ==================== */
+.hamburger-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.hamburger-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* ==================== MENU HAMBURGER ==================== */
+.hamburger-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 320px;
+    height: 100vh;
+    height: 100dvh;
+    background: white;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.hamburger-menu.active {
+    left: 0;
+}
+
+/* ==================== HEADER DU MENU ==================== */
+.hamburger-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    flex-shrink: 0;
+}
+
+.hamburger-header .brand-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hamburger-header .logo-image {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.hamburger-header .brand-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    -webkit-text-fill-color: white;
+}
+
+/* ==================== BOUTON FERMER ==================== */
+.close-menu {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.close-menu:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+/* ==================== NAVIGATION ==================== */
+.hamburger-nav {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+}
+
+.hamburger-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 20px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    border: none;
+    background: transparent;
+    width: 100%;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    text-align: left;
+}
+
+.hamburger-link:hover {
+    background: #f8f9fa;
+    color: var(--primary-color);
+    padding-left: 25px;
+}
+
+.hamburger-link.active {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+    color: var(--primary-color);
+    border-left: 4px solid var(--primary-color);
+    font-weight: 600;
+}
+
+.link-icon {
+    font-size: 1.3rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* ==================== SÉPARATEUR ==================== */
+.hamburger-divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 15px 20px;
+}
+
+/* ==================== FOOTER DU MENU ==================== */
+.hamburger-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #f0f0f0;
+    background: #fafafa;
+    flex-shrink: 0;
+}
+
+.hamburger-footer .hamburger-link {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+/* ==================== SCROLLBAR ==================== */
+.hamburger-menu::-webkit-scrollbar,
+.hamburger-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.hamburger-menu::-webkit-scrollbar-track,
+.hamburger-nav::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.hamburger-menu::-webkit-scrollbar-thumb,
+.hamburger-nav::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        width: 85%;
+        max-width: 320px;
+    }
+    
+    .hamburger-btn {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .hamburger-link {
+        padding: 16px 20px;
+        min-height: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hamburger-menu {
+        width: 90%;
+    }
+}
+
+/* ==================== BLOCAGE SCROLL ==================== */
+body.menu-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+}
+/* ==================== CONTENU PRINCIPAL ==================== */
+.products-container {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: calc(80px + var(--spacing-lg)) var(--spacing-lg) var(--spacing-lg);
+}
+
+.page-header {
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: var(--spacing-sm);
+    animation: fadeIn 0.6s ease;
+}
+
+.page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    animation: fadeIn 0.8s ease;
+}
+
+/* ==================== FILTRES ==================== */
+.filters-section {
+    background: var(--bg-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-light);
+    margin-bottom: var(--spacing-xl);
+    animation: fadeIn 1s ease;
+}
+
+.search-bar {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 250px;
+    padding: var(--spacing-md);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    transition: var(--transition-fast);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.filter-select {
+    padding: var(--spacing-md);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.products-count {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.action-buttons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.btn-action {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--primary-color);
+    background: var(--bg-card);
+    color: var(--primary-color);
+    border-radius: var(--radius-md);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.btn-action:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ==================== GRILLE PRODUITS ==================== */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.product-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-fast);
+    animation: fadeIn 0.6s ease;
+    animation-fill-mode: both;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+}
+
+.product-image-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: var(--gradient-soft);
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-badges {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 90%;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badge-published {
+    background: rgba(52, 199, 89, 0.9);
+    color: white;
+}
+
+.badge-draft {
+    background: rgba(255, 149, 0, 0.9);
+    color: white;
+}
+
+.badge-category {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--primary-color);
+}
+
+.product-content {
+    padding: var(--spacing-md);
+}
+
+.product-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+}
+
+.product-description {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-sm);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.product-images-preview {
+    display: flex;
+    gap: 4px;
+    margin-bottom: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.mini-image {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+    transition: var(--transition-fast);
+}
+
+.mini-image:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.product-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm);
+    background: var(--gradient-soft);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.product-stock {
+    text-align: right;
+}
+
+.stock-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.stock-value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.stock-value.in-stock {
+    color: var(--success);
+}
+
+.stock-value.out-of-stock {
+    color: var(--error);
+}
+
+.product-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--spacing-xs);
+}
+
+.btn-product {
+    padding: 8px 4px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 0.75rem;
+}
+
+.btn-view {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.btn-edit {
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-delete {
+    background: white;
+    color: var(--error);
+    border: 2px solid var(--error);
+}
+
+.btn-product:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-light);
+}
+
+/* ==================== ÉTAT VIDE ==================== */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-light);
+    grid-column: 1 / -1;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-text {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.btn-add-product {
+    padding: var(--spacing-md) var(--spacing-xl);
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-add-product:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* ==================== MODAL ==================== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+    backdrop-filter: blur(5px);
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-header {
+    padding: var(--spacing-lg);
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 10;
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--error);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: var(--error);
+    color: white;
+}
+
+.modal-body {
+    padding: var(--spacing-lg);
+}
+
+.modal-images {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.modal-main-image {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-medium);
+}
+
+.modal-desc-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+/* Tablettes (768px - 1024px) */
+@media (max-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--spacing-md);
+    }
+}
+
+/* Mobile Large (481px - 768px) */
+@media (max-width: 768px) {
+    .sidebar-left {
+        display: none;
+    }
+    
+    .products-container {
+        margin-left: 0;
+        padding: calc(70px + var(--spacing-md)) var(--spacing-sm) var(--spacing-md);
+    }
+
+    .hamburger-btn {
+        display: flex;
+    }
+
+    .brand-name {
+        font-size: 1.1rem;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+    }
+
+    .filters-section {
+        padding: var(--spacing-md);
+    }
+
+    .search-bar {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .search-input,
+    .filter-select {
+        min-width: 100%;
+        width: 100%;
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+
+    .stats-row {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: stretch;
+    }
+
+    .products-count {
+        font-size: 0.9rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .btn-action {
+        width: 100%;
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+    }
+
+    /* ✅ 2 PRODUITS PAR LIGNE SUR TABLETTE/MOBILE LARGE */
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .product-image-container {
+        height: 140px;
+    }
+
+    .product-content {
+        padding: 10px;
+    }
+
+    .product-title {
+        font-size: 0.9rem;
+        line-height: 1.2;
+        margin-bottom: 6px;
+    }
+
+    .product-description {
+        font-size: 0.75rem;
+        margin-bottom: 8px;
+        -webkit-line-clamp: 1;
+    }
+
+    .product-price {
+        font-size: 1rem;
+    }
+
+    .product-info {
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+
+    .stock-label {
+        font-size: 0.65rem;
+    }
+
+    .stock-value {
+        font-size: 0.85rem;
+    }
+
+    .product-actions {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .btn-product {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+    }
+
+    .mini-image {
+        width: 30px;
+        height: 30px;
+    }
+
+    .product-images-preview {
+        gap: 3px;
+        margin-bottom: 6px;
+    }
+
+    .badge {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
+
+    .modal-images {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-main-image {
+        height: 250px;
+    }
+
+    .modal-header,
+    .modal-body {
+        padding: var(--spacing-md);
+    }
+}
+
+/* Mobile Standard (376px - 480px) */
+@media (max-width: 480px) {
+    .products-container {
+        padding: calc(70px + var(--spacing-sm)) 8px var(--spacing-sm);
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.9rem;
+    }
+
+    /* ✅ 2 PRODUITS PAR LIGNE SUR MOBILE STANDARD */
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .product-card {
+        border-radius: 10px;
+    }
+
+    .product-image-container {
+        height: 120px;
+    }
+
+    .product-content {
+        padding: 8px;
+    }
+
+    .product-title {
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+
+    .product-description {
+        font-size: 0.7rem;
+        margin-bottom: 6px;
+        -webkit-line-clamp: 1;
+    }
+
+    .product-price {
+        font-size: 0.95rem;
+    }
+
+    .product-info {
+        padding: 6px;
+        margin-bottom: 6px;
+    }
+
+    .stock-label {
+        font-size: 0.6rem;
+    }
+
+    .stock-value {
+        font-size: 0.8rem;
+    }
+
+    .btn-product {
+        padding: 7px 4px;
+        font-size: 0.7rem;
+    }
+
+    .mini-image {
+        width: 28px;
+        height: 28px;
+    }
+
+    .badge {
+        font-size: 0.55rem;
+        padding: 2px 5px;
+    }
+
+    .filters-section {
+        padding: 10px;
+    }
+
+    .search-input,
+    .filter-select {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Petit (320px - 375px) */
+@media (max-width: 375px) {
+    .products-container {
+        padding: calc(70px + 6px) 6px 6px;
+    }
+
+    .page-title {
+        font-size: 1.3rem;
+    }
+
+    /* ✅ 2 PRODUITS PAR LIGNE SUR PETIT MOBILE */
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .product-image-container {
+        height: 110px;
+    }
+
+    .product-content {
+        padding: 6px;
+    }
+
+    .product-title {
+        font-size: 0.8rem;
+        margin-bottom: 3px;
+        -webkit-line-clamp: 1;
+    }
+
+    .product-description {
+        font-size: 0.65rem;
+        margin-bottom: 5px;
+        -webkit-line-clamp: 1;
+    }
+
+    .product-price {
+        font-size: 0.9rem;
+    }
+
+    .product-info {
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+
+    .stock-label {
+        font-size: 0.55rem;
+    }
+
+    .stock-value {
+        font-size: 0.75rem;
+    }
+
+    .btn-product {
+        padding: 6px 3px;
+        font-size: 0.65rem;
+    }
+
+    .mini-image {
+        width: 25px;
+        height: 25px;
+    }
+
+    .badge {
+        font-size: 0.5rem;
+        padding: 2px 4px;
+    }
+
+    .product-badges {
+        top: 3px;
+        right: 3px;
+        gap: 3px;
+    }
+}
+
+/* Très petit mobile (< 320px) */
+@media (max-width: 320px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+
+    .product-image-container {
+        height: 100px;
+    }
+
+    .product-title {
+        font-size: 0.75rem;
+    }
+
+    .product-description {
+        display: none; /* Cacher la description sur très petits écrans */
+    }
+
+    .product-price {
+        font-size: 0.85rem;
+    }
+
+    .btn-product {
+        font-size: 0.6rem;
+        padding: 5px 2px;
+    }
+}
+</style>
+<body>
+     <!-- Menu Hamburger Overlay -->
+     <div class="hamburger-overlay" id="hamburgerOverlay"></div>
+    
+     <!-- Menu Hamburger -->
+     <div class="hamburger-menu" id="hamburgerMenu">
+         <div class="hamburger-header">
+             <div class="brand-section">
+                 <div class="logo-image"></div>
+                 <h1 class="brand-name">ODA</h1>
+             </div>
+             <button class="close-menu" id="closeMenu">
+                 <span>×</span>
+             </button>
+         </div>
+         
+         <nav class="hamburger-nav">
+             <a href="tableau.html" class="hamburger-link">
+                 <span class="link-icon">📊</span>
+                 <span>Tableau de bord</span>
+             </a>
+             <a href="produit.html" class="hamburger-link active">
+                 <span class="link-icon">📦</span>
+                 <span>Produits</span>
+             </a>
+             <a href="commandes.html" class="hamburger-link">
+                 <span class="link-icon">📋</span>
+                 <span>Commandes</span>
+             </a>
+             <a href="clients.html" class="hamburger-link">
+                 <span class="link-icon">👥</span>
+                 <span>Clients</span>
+             </a>
+             <a href="messages.html" class="hamburger-link">
+                 <span class="link-icon">💬</span>
+                 <span>Messages</span>
+             </a>
+             
+             <div class="hamburger-divider"></div>
+             
+             <a href="statitique.html" class="hamburger-link">
+                 <span class="link-icon">📊</span>
+                 <span>Statistiques</span>
+             </a>
+             <a href="parametres.html" class="hamburger-link">
+                 <span class="link-icon">⚙️</span>
+                 <span>Paramètres</span>
+             </a>
+             <a href="boutique.html" class="hamburger-link">
+                 <span class="link-icon">🏪</span>
+                 <span>Voir ma boutique</span>
+             </a>
+         </nav>
+         
+         <a href="https://whatsapp.com/channel/0029Vb6mcUm5q08htMMdVA2v" class="hamburger-link">
+            <span class="link-icon">✆</span>
+            <span>Rejoindre notre chaine</span>
+        </a>
+        <a href="https://t.me/+hqymnTrseaU2OWRk" class="hamburger-link">
+            <span class="link-icon">🗩</span>
+            <span>rejoindre notre groupe telegram</span>
+        </a>
+     </div>
+
+    <!-- Header Principal -->
+    <header class="main-header">
+        <div class="header-container">
+            <button class="hamburger-btn" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="brand-section">
+                <h1 class="brand-name"> Oda</h1>
+            </div>
+
+           
+                <div class="user-profile">
+                    <div class="avatar-image"></div>
+                    <span class="user-name">Admin</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteneur Principal -->
+    <div class="products-container">
+        <!-- En-tête de page -->
+        <div class="page-header">
+            <h1 class="page-title">Mes Produits</h1>
+            <p class="page-subtitle">Gérez tous vos produits en un seul endroit</p>
+        </div>
+
+        <!-- Section Filtres -->
+        <div class="filters-section">
+            <div class="search-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Rechercher un produit...">
+                
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">Sélectionnez une catégorie</option>
+                            <option value="Vetements">Vetements</option>
+                            <option value="Electroniques">Electroniques</option>
+                            <option value="Decoration">Decoration</option>
+                            <option value="Accessoires">Accessoires</option>
+                            <option value="Electromenager">Electromenager</option>
+                            <option value="Beaute & soin">Beaute & soin</option>
+                            <option value="Accessoires">Accessoires</option>
+                            <option value="Bebe">Bebe</option>
+                            <option value="jeux & jouets">jeux & jouets</option>
+                            <option value="Bricolage">Bricolage</option>
+                            <option value="Alimentation">Alimentation</option>
+                            <option value="Boissons">Boissons</option>
+                            <option value="Livre">Livre</option>
+                            <option value="Hygiene & sante">Hygiene & sante</option>
+                            <option value="fitness">fitness</option>
+                            <option value="Animaux">Animaux</option>
+                            <option value="Luxe">Luxe</option>
+                            <option value="Bureau">Bureau</option>
+                </select>
+
+                <select id="statusFilter" class="filter-select">
+                    <option value="">Tous statuts</option>
+                    <option value="published">Publié</option>
+                    <option value="draft">Brouillon</option>
+                </select>
+
+                <select id="sortFilter" class="filter-select">
+                    <option value="recent">Plus récents</option>
+                    <option value="name">Nom A-Z</option>
+                    <option value="price-asc">Prix croissant</option>
+                    <option value="price-desc">Prix décroissant</option>
+                    <option value="stock">Stock</option>
+                </select>
+            </div>
+
+            <div class="stats-row">
+                <div class="products-count" id="productsCount">0 produit(s) trouvé(s)</div>
+                <div class="action-buttons">
+                    <button class="btn-action" onclick="exportToJSON()">📥 Exporter</button>
+                    <button class="btn-action" onclick="window.location.href='tableau.html'">+ Ajouter</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grille de produits -->
+        <div class="products-grid" id="productsGrid">
+            <!-- Les produits seront injectés ici par JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal Détails Produit -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Détails du produit</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Le contenu sera injecté par JavaScript -->
+            </div>
+        </div>
+    </div>
+<script type="module">
+    // ==================== PARTIE 1: CONFIGURATION & AUTHENTIFICATION ====================
+
+// Configuration Supabase
+const SUPABASE_URL = 'https://xjckbqbqxcwzcrlmuvzf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2ticWJxeGN3emNybG11dnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MTk1MzMsImV4cCI6MjA3NjA5NTUzM30.AMzAUwtjFt7Rvof5r2enMyYIYToc1wNWWEjvZqK_YXM';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Variables globales
+let produits = [];
+let filteredProduits = [];
+let currentUser = null;
+let abonnementActuel = null;
+
+// Exporter les fonctions globales
+window.voirDetails = voirDetails;
+window.modifierProduit = modifierProduit;
+window.supprimerProduit = supprimerProduit;
+window.exportToJSON = exportToJSON;
+window.closeModal = closeModal;
+
+// ==================== INITIALISATION ====================
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🌸 Page Produits initialisée !');
+    
+    await verifierAuthentification();
+    initialiserMenuHamburger();
+    await initialiserSystemeAbonnement();
+    await chargerProduits();
+    await verifierAbonnement();
+    initFilters();
+    verifierEdition();
+    ajouterBoutonAbonnement();
+    ajouterLienAbonnementMenu();
+    
+    console.log('✅ Page produits prête avec système d\'abonnement');
+});
+
+// ==================== AUTHENTIFICATION ====================
+async function verifierAuthentification() {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (!session) {
+            console.warn('⚠️ Aucune session active');
+            window.location.href = 'connexion.html';
+            return;
+        }
+        
+        currentUser = session.user;
+        console.log('✅ Utilisateur connecté:', currentUser.email);
+        
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+            userNameElement.textContent = currentUser.email.split('@')[0];
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur authentification:', error);
+        window.location.href = 'connexion.html';
+    }
+}
+
+// ==================== MENU HAMBURGER ====================
+function initialiserMenuHamburger() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const hamburgerOverlay = document.getElementById('hamburgerOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+    
+    console.log('📱 Initialisation menu hamburger...');
+    
+    if (!hamburgerBtn || !hamburgerMenu || !hamburgerOverlay) {
+        console.error('❌ Éléments du menu manquants');
+        return;
+    }
+    
+    const ouvrirMenu = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        hamburgerBtn.classList.add('active');
+        hamburgerMenu.classList.add('active');
+        hamburgerOverlay.classList.add('active');
+        document.body.classList.add('menu-open');
+        
+        const scrollY = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = '100%';
+    };
+    
+    const fermerMenu = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        hamburgerBtn.classList.remove('active');
+        hamburgerMenu.classList.remove('active');
+        hamburgerOverlay.classList.remove('active');
+        document.body.classList.remove('menu-open');
+        
+        const scrollY = document.body.style.top;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    };
+    
+    const toggleMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (hamburgerMenu.classList.contains('active')) {
+            fermerMenu(e);
+        } else {
+            ouvrirMenu(e);
+        }
+    };
+    
+    hamburgerBtn.addEventListener('touchstart', toggleMenu, { passive: false });
+    hamburgerBtn.addEventListener('click', toggleMenu);
+    
+    if (closeMenu) {
+        closeMenu.addEventListener('touchstart', fermerMenu, { passive: false });
+        closeMenu.addEventListener('click', fermerMenu);
+    }
+    
+    hamburgerOverlay.addEventListener('touchstart', fermerMenu, { passive: false });
+    hamburgerOverlay.addEventListener('click', fermerMenu);
+    
+    const hamburgerLinks = document.querySelectorAll('.hamburger-link');
+    hamburgerLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            setTimeout(() => fermerMenu(), 200);
+        });
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && hamburgerMenu.classList.contains('active')) {
+            fermerMenu();
+        }
+    });
+    
+    console.log('✅ Menu hamburger initialisé avec succès');
+}
+
+// ==================== BOUTONS ABONNEMENT UI ====================
+function ajouterBoutonAbonnement() {
+    const headerActions = document.querySelector('.header-actions');
+    if (!headerActions) return;
+
+    if (document.getElementById('btn-abonnement')) return;
+
+    const btnAbonnement = document.createElement('a');
+    btnAbonnement.id = 'btn-abonnement';
+    btnAbonnement.href = 'abonnement.html';
+    btnAbonnement.style.cssText = `
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 12px rgba(255, 165, 0, 0.3);
+    `;
+    btnAbonnement.innerHTML = '👑 Abonnements';
+
+    btnAbonnement.addEventListener('mouseover', () => {
+        btnAbonnement.style.transform = 'translateY(-2px)';
+        btnAbonnement.style.boxShadow = '0 6px 16px rgba(255, 165, 0, 0.4)';
+    });
+
+    btnAbonnement.addEventListener('mouseout', () => {
+        btnAbonnement.style.transform = 'translateY(0)';
+        btnAbonnement.style.boxShadow = '0 4px 12px rgba(255, 165, 0, 0.3)';
+    });
+
+    headerActions.appendChild(btnAbonnement);
+}
+
+function ajouterLienAbonnementMenu() {
+    const hamburgerNav = document.querySelector('.hamburger-nav');
+    if (!hamburgerNav) return;
+
+    if (document.getElementById('menu-abonnement')) return;
+
+    const lienAbonnement = document.createElement('a');
+    lienAbonnement.id = 'menu-abonnement';
+    lienAbonnement.href = 'abonnement.html';
+    lienAbonnement.className = 'hamburger-link';
+    lienAbonnement.innerHTML = `
+        <span class="link-icon">👑</span>
+        <span>Abonnements</span>
+    `;
+
+    const parametresLink = Array.from(hamburgerNav.querySelectorAll('.hamburger-link'))
+        .find(link => link.textContent.includes('Paramètres'));
+    
+    if (parametresLink) {
+        parametresLink.after(lienAbonnement);
+    } else {
+        hamburgerNav.appendChild(lienAbonnement);
+    }
+}
+
+// Export pour la partie 2
+window.supabase = supabase;
+window.currentUser = currentUser;
+window.produits = produits;
+window.filteredProduits = filteredProduits;
+window.abonnementActuel = abonnementActuel;
+// ==================== PARTIE 2: SYSTÈME D'ABONNEMENT COMPLET ====================
+
+// ==================== PARTIE 2: SYSTÈME D'ABONNEMENT COMPLET ====================
+
+// ==================== VÉRIFICATION QUOTA AVANT PUBLICATION ====================
+async function verifierQuotaAvantPublication(produitId = null) {
+    try {
+        const { data: abo, error: aboError } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        let limite = 10; // ✅ Plan gratuit PAR DÉFAUT
+        let planActif = false;
+        
+        if (abo && !aboError) {
+            const expiration = new Date(abo.date_expiration);
+            const maintenant = new Date();
+            
+            if (expiration > maintenant) {
+                limite = abo.limite_produits;
+                planActif = true;
+                console.log(`✅ Abonnement ${abo.plan} actif: ${limite} produits max`);
+            } else {
+                console.log(`⚠️ Abonnement expiré, retour au plan gratuit: ${limite} produits max`);
+            }
+        } else {
+            console.log(`📊 Plan gratuit: ${limite} produits max`);
+        }
+
+        const { data: produits, error: countError } = await supabase
+            .from('produits')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'published');
+
+        if (countError) throw countError;
+
+        let nombrePublies = produits ? produits.length : 0;
+        
+        if (produitId) {
+            const produitExiste = produits?.find(p => p.id === produitId);
+            if (produitExiste) {
+                nombrePublies--;
+            }
+        }
+
+        const restant = limite - nombrePublies;
+        const peutPublier = nombrePublies < limite;
+
+        console.log(`📊 Quota actuel: ${nombrePublies}/${limite} produits publiés (${restant} restant${restant > 1 ? 's' : ''})`);
+
+        return {
+            peutPublier,
+            nombrePublies,
+            limite,
+            restant,
+            planActif
+        };
+        
+    } catch (error) {
+        console.error('❌ Erreur vérification quota:', error);
+        return { 
+            peutPublier: false, 
+            nombrePublies: 0, 
+            limite: 10, 
+            restant: 10,
+            planActif: false 
+        };
+    }
+}
+
+// ==================== VÉRIFIER ABONNEMENT ====================
+async function verifierAbonnement() {
+    try {
+        if (!currentUser) return;
+
+        const { data, error } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (error && error.code !== 'PGRST116') {
+            console.error('Erreur vérification abonnement:', error);
+            return;
+        }
+
+        if (data) {
+            abonnementActuel = data;
+            const expiration = new Date(data.date_expiration);
+            const maintenant = new Date();
+
+            if (expiration <= maintenant) {
+                afficherBanniereAbonnement('expired');
+            } else {
+                afficherBanniereAbonnement('active', data);
+                console.log(`✅ Abonnement actif: ${data.plan} (${data.limite_produits} produits max)`);
+            }
+        } else {
+            afficherBanniereAbonnement('none');
+            console.log(`📊 Plan gratuit: 10 produits max`);
+        }
+    } catch (error) {
+        console.error('❌ Erreur vérification abonnement:', error);
+    }
+}
+
+// ==================== GÉRER PRODUITS EXPIRÉS ====================
+async function gererProduitsExpires() {
+    try {
+        if (!currentUser) return;
+
+        const { data: abo, error: aboError } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (aboError && aboError.code !== 'PGRST116') {
+            console.error('Erreur récupération abonnement:', aboError);
+            return;
+        }
+
+        let limite = 10; // ✅ Plan gratuit par défaut
+        let abonnementActif = false;
+        let abonnementExpire = false;
+
+        // Vérifier statut abonnement
+        if (abo) {
+            const dateExpiration = new Date(abo.date_expiration);
+            const maintenant = new Date();
+            
+            if (dateExpiration > maintenant) {
+                limite = abo.limite_produits;
+                abonnementActif = true;
+                console.log(`✅ Abonnement ${abo.plan} actif - Limite: ${limite} produits`);
+            } else {
+                abonnementExpire = true;
+                console.log(`⚠️ Abonnement ${abo.plan} expiré - Retour plan gratuit: ${limite} produits`);
+            }
+        } else {
+            console.log(`📊 Plan gratuit: ${limite} produits`);
+        }
+        
+        // Récupérer TOUS les produits, triés du plus ANCIEN au plus RÉCENT
+        const { data: tousProduits, error: fetchError } = await supabase
+            .from('produits')
+            .select('id, nom, statut, created_at, date_draft')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: true }); // ✅ Du plus ancien au plus récent
+
+        if (fetchError) throw fetchError;
+
+        if (!tousProduits || tousProduits.length === 0) {
+            console.log('ℹ️ Aucun produit à gérer');
+            return;
+        }
+
+        console.log(`📊 Total: ${tousProduits.length} produits, Limite: ${limite}`);
+
+        const maintenant = new Date();
+
+        // ✅ Les X premiers produits doivent être publiés
+        const produitsAGarderPublies = tousProduits.slice(0, limite);
+        
+        // ⚠️ Tous les autres doivent être en brouillon
+        const produitsExcedentaires = tousProduits.slice(limite);
+
+        let nombrePublies = 0;
+        let nombreMisDraft = 0;
+        let nombreSupprimes = 0;
+
+        // ✅ ÉTAPE 1: Publier les X premiers s'ils ne le sont pas
+        const idsAPublier = produitsAGarderPublies
+            .filter(p => p.statut !== 'published')
+            .map(p => p.id);
+
+        if (idsAPublier.length > 0) {
+            const { error: updateError } = await supabase
+                .from('produits')
+                .update({ 
+                    statut: 'published',
+                    date_draft: null
+                })
+                .in('id', idsAPublier);
+
+            if (updateError) throw updateError;
+
+            nombrePublies = idsAPublier.length;
+            console.log(`✅ ${nombrePublies} produit(s) publiés (les ${limite} premiers)`);
+        }
+
+        // ⚠️ ÉTAPE 2: Mettre les excédentaires en brouillon avec date_draft
+        const idsAMettreDraft = produitsExcedentaires
+            .filter(p => p.statut === 'published')
+            .map(p => p.id);
+
+        if (idsAMettreDraft.length > 0) {
+            const { error: updateError } = await supabase
+                .from('produits')
+                .update({ 
+                    statut: 'draft',
+                    date_draft: maintenant.toISOString() // ✅ Enregistrer la date
+                })
+                .in('id', idsAMettreDraft);
+
+            if (updateError) throw updateError;
+
+            nombreMisDraft = idsAMettreDraft.length;
+            console.log(`⚠️ ${nombreMisDraft} produit(s) mis en brouillon`);
+            
+            if (abonnementExpire) {
+                afficherNotification(
+                    `⚠️ Abonnement expiré: ${nombreMisDraft} produits en brouillon. Renouvelez dans 14 jours pour éviter leur suppression.`,
+                    'warning'
+                );
+            }
+        }
+
+        // 🗑️ ÉTAPE 3: Supprimer les produits en brouillon depuis plus de 14 jours
+        const date14JoursAvant = new Date();
+        date14JoursAvant.setDate(date14JoursAvant.getDate() - 14);
+
+        const produitsASupprimer = produitsExcedentaires.filter(p => {
+            if (!p.date_draft || p.statut !== 'draft') return false;
+            const dateDraft = new Date(p.date_draft);
+            return dateDraft <= date14JoursAvant;
+        });
+
+        if (produitsASupprimer.length > 0) {
+            const idsASupprimer = produitsASupprimer.map(p => p.id);
+            
+            const { error: deleteError } = await supabase
+                .from('produits')
+                .delete()
+                .in('id', idsASupprimer);
+
+            if (deleteError) throw deleteError;
+
+            nombreSupprimes = produitsASupprimer.length;
+            console.log(`🗑️ ${nombreSupprimes} produit(s) supprimés (brouillon > 14 jours)`);
+            
+            afficherNotification(
+                `🗑️ ${nombreSupprimes} produit(s) supprimés automatiquement (brouillon depuis plus de 14 jours).`,
+                'error'
+            );
+        }
+
+        // Message de confirmation
+        if (nombrePublies === 0 && nombreMisDraft === 0 && nombreSupprimes === 0) {
+            console.log(`✅ Tout est en ordre: ${limite} produits publiés`);
+        }
+
+    } catch (error) {
+        console.error('❌ Erreur gestion produits expirés:', error);
+    }
+}
+
+// ==================== SUPPRIMER PRODUITS ANCIENS (>14 JOURS) ====================
+async function supprimerProduitsAnciens() {
+    try {
+        if (!currentUser) return;
+
+        const dateLimite = new Date();
+        dateLimite.setDate(dateLimite.getDate() - 14);
+        const dateLimiteISO = dateLimite.toISOString();
+
+        console.log(`🗑️ Recherche des produits en brouillon depuis plus de 14 jours`);
+
+        const { data: produitsASupprimer, error: fetchError } = await supabase
+            .from('produits')
+            .select('id, nom, date_draft, created_at')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'draft')
+            .not('date_draft', 'is', null)
+            .lt('date_draft', dateLimiteISO);
+
+        if (fetchError) throw fetchError;
+
+        if (!produitsASupprimer || produitsASupprimer.length === 0) {
+            console.log('ℹ️ Aucun produit ancien à supprimer');
+            return;
+        }
+
+        console.log(`⚠️ ${produitsASupprimer.length} produit(s) à supprimer`);
+
+        const ids = produitsASupprimer.map(p => p.id);
+        const { error: deleteError } = await supabase
+            .from('produits')
+            .delete()
+            .in('id', ids);
+
+        if (deleteError) throw deleteError;
+
+        console.log(`✅ ${produitsASupprimer.length} produit(s) supprimés automatiquement`);
+        
+        afficherNotification(
+            `🗑️ ${produitsASupprimer.length} produit(s) en brouillon depuis plus de 14 jours ont été supprimés définitivement.`,
+            'error'
+        );
+
+        await chargerProduits();
+
+    } catch (error) {
+        console.error('❌ Erreur suppression produits anciens:', error);
+    }
+}
+
+// ==================== AVERTISSEMENT PRODUITS EN DANGER ====================
+async function afficherAvertissementProduitsEnDanger() {
+    try {
+        if (!currentUser) return;
+
+        const date7Jours = new Date();
+        date7Jours.setDate(date7Jours.getDate() - 7);
+        
+        const date14Jours = new Date();
+        date14Jours.setDate(date14Jours.getDate() - 14);
+
+        const { data: produitsEnDanger, error } = await supabase
+            .from('produits')
+            .select('id, nom, date_draft')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'draft')
+            .not('date_draft', 'is', null)
+            .lt('date_draft', date7Jours.toISOString())
+            .gte('date_draft', date14Jours.toISOString());
+
+        if (error) throw error;
+
+        if (!produitsEnDanger || produitsEnDanger.length === 0) {
+            return;
+        }
+
+        const joursRestants = produitsEnDanger.map(p => {
+            const joursBrouillon = Math.floor((new Date() - new Date(p.date_draft)) / (1000 * 60 * 60 * 24));
+            return 14 - joursBrouillon;
+        });
+        const minJours = Math.min(...joursRestants);
+        const maxJours = Math.max(...joursRestants);
+
+        const banniere = document.createElement('div');
+        banniere.id = 'warning-banner';
+        banniere.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #FF9500 0%, #FF6B00 100%);
+            color: white;
+            padding: 20px 28px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(255, 149, 0, 0.4);
+            z-index: 1500;
+            max-width: 650px;
+            width: 90%;
+            animation: slideDown 0.5s ease;
+            font-family: 'Poppins', sans-serif;
+        `;
+
+        banniere.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 3rem;">⚠️</div>
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 700;">
+                        ⏰ Produits en danger de suppression !
+                    </h3>
+                    <p style="margin: 0 0 4px 0; font-size: 0.95rem; opacity: 0.95; line-height: 1.5;">
+                        <strong>${produitsEnDanger.length} produit(s)</strong> seront supprimés définitivement dans 
+                        <strong>${minJours}${minJours !== maxJours ? `-${maxJours}` : ''} jour${maxJours > 1 ? 's' : ''}</strong>.
+                    </p>
+                    <p style="margin: 0 0 16px 0; font-size: 0.85rem; opacity: 0.9;">
+                        Renouvelez votre abonnement pour les récupérer avant qu'il ne soit trop tard.
+                    </p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button onclick="window.location.href='abonnement.html'" 
+                                style="padding: 12px 24px; background: white; color: #FF9500; 
+                                       border: none; border-radius: 12px; font-weight: 700; 
+                                       cursor: pointer; font-family: 'Poppins', sans-serif; 
+                                       font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                       transition: all 0.3s ease;">
+                            👑 Renouveler maintenant
+                        </button>
+                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" 
+                                style="padding: 12px 24px; background: rgba(255, 255, 255, 0.2); 
+                                       color: white; border: 2px solid white; border-radius: 12px; 
+                                       font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; 
+                                       font-size: 0.9rem; transition: all 0.3s ease;">
+                            Plus tard
+                        </button>
+                    </div>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        style="background: rgba(255, 255, 255, 0.2); border: none; 
+                               color: white; font-size: 1.8rem; cursor: pointer; 
+                               width: 36px; height: 36px; border-radius: 50%; 
+                               display: flex; align-items: center; justify-content: center;
+                               transition: all 0.3s ease; line-height: 1;">
+                    ×
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(banniere);
+
+    } catch (error) {
+        console.error('❌ Erreur affichage avertissement:', error);
+    }
+}
+
+// ==================== INITIALISER SYSTÈME ====================
+async function initialiserSystemeAbonnement() {
+    try {
+        console.log('🚀 Initialisation du système d\'abonnement...');
+        
+        await gererProduitsExpires();
+        await supprimerProduitsAnciens();
+        await afficherAvertissementProduitsEnDanger();
+        
+        console.log('✅ Système d\'abonnement initialisé');
+        
+    } catch (error) {
+        console.error('❌ Erreur initialisation système:', error);
+    }
+}
+
+// Export pour partie 3
+window.verifierQuotaAvantPublication = verifierQuotaAvantPublication;
+window.verifierAbonnement = verifierAbonnement;
+// ==================== PARTIE 3: BANNIÈRES & CHARGEMENT PRODUITS ====================
+
+// ==================== BANNIÈRE ABONNEMENT ====================
+function afficherBanniereAbonnement(statut, data = null) {
+    const ancienneBanniere = document.getElementById('subscription-banner');
+    if (ancienneBanniere) {
+        ancienneBanniere.remove();
+    }
+
+    const banniere = document.createElement('div');
+    banniere.id = 'subscription-banner';
+    banniere.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: white;
+        padding: 20px 24px;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        z-index: 1500;
+        max-width: 400px;
+        animation: slideInRight 0.5s ease;
+        font-family: 'Poppins', sans-serif;
+    `;
+
+    let contenu = '';
+    
+    switch(statut) {
+        case 'none':
+            banniere.style.borderLeft = '4px solid #FF9500';
+            contenu = `
+                <div style="display: flex; align-items: start; gap: 12px;">
+                    <div style="font-size: 2rem;">⚠️</div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 600;">
+                            Plan gratuit actif
+                        </h3>
+                        <p style="margin: 0 0 16px 0; color: #666; font-size: 0.9rem;">
+                            Limite : 10 produits publiés maximum
+                        </p>
+                        <button onclick="window.location.href='abonnement.html'" 
+                                style="width: 100%; padding: 12px; background: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%); 
+                                       color: white; border: none; border-radius: 12px; font-weight: 600; 
+                                       cursor: pointer; font-family: 'Poppins', sans-serif;">
+                            📋 Voir les offres
+                        </button>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; font-size: 1.5rem; 
+                                   cursor: pointer; color: #999; padding: 0; line-height: 1;">
+                        ×
+                    </button>
+                </div>
+            `;
+            break;
+
+        case 'expired':
+            banniere.style.borderLeft = '4px solid #FF3B30';
+            contenu = `
+                <div style="display: flex; align-items: start; gap: 12px;">
+                    <div style="font-size: 2rem;">🚫</div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 600; color: #FF3B30;">
+                            Abonnement expiré
+                        </h3>
+                        <p style="margin: 0 0 16px 0; color: #666; font-size: 0.9rem;">
+                            Produits excédentaires en brouillon. Renouvelez pour les réactiver.
+                        </p>
+                        <button onclick="window.location.href='abonnement.html'" 
+                                style="width: 100%; padding: 12px; background: #FF3B30; 
+                                       color: white; border: none; border-radius: 12px; font-weight: 600; 
+                                       cursor: pointer; font-family: 'Poppins', sans-serif;">
+                            🔄 Renouveler maintenant
+                        </button>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; font-size: 1.5rem; 
+                                   cursor: pointer; color: #999; padding: 0; line-height: 1;">
+                        ×
+                    </button>
+                </div>
+            `;
+            break;
+            
+            case 'grace_period':
+    const joursRestants = Math.ceil((new Date(data.grace_period_end) - new Date()) / (1000 * 60 * 60 * 24));
+    banniere.style.borderLeft = '4px solid #FF9500';
+    contenu = `
+        <div style="display: flex; align-items: start; gap: 12px;">
+            <div style="font-size: 2rem;">⏰</div>
+            <div style="flex: 1;">
+                <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 600; color: #FF9500;">
+                    Période de grâce active
+                </h3>
+                <p style="margin: 0 0 16px 0; color: #666; font-size: 0.9rem;">
+                    Renouvelez dans <strong>${joursRestants} jour${joursRestants > 1 ? 's' : ''}</strong> pour récupérer vos ${data.draft_count} produits en brouillon.
+                </p>
+                <button onclick="window.location.href='abonnement.html'" 
+                        style="width: 100%; padding: 12px; background: #FF9500; 
+                               color: white; border: none; border-radius: 12px; font-weight: 600; 
+                               cursor: pointer; font-family: 'Poppins', sans-serif;">
+                    🔄 Renouveler maintenant
+                </button>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" 
+                    style="background: none; border: none; font-size: 1.5rem; 
+                           cursor: pointer; color: #999; padding: 0; line-height: 1;">
+                ×
+            </button>
+        </div>
+    `;
+    break;
+        case 'active':
+            const expiration = new Date(data.date_expiration);
+            const maintenant = new Date();
+            const jourRestants = Math.ceil((expiration - maintenant) / (1000 * 60 * 60 * 24));
+            const nombrePublies = produits.filter(p => p.statut === 'published').length;
+            const pourcentage = (nombrePublies / data.limite_produits) * 100;
+            
+            banniere.style.borderLeft = '4px solid #34C759';
+            contenu = `
+                <div style="display: flex; align-items: start; gap: 12px;">
+                    <div style="font-size: 2rem;">✅</div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 600; color: #34C759;">
+                            Plan ${data.plan.toUpperCase()} actif
+                        </h3>
+                        <p style="margin: 0 0 12px 0; color: #666; font-size: 0.85rem;">
+                            ${nombrePublies}/${data.limite_produits} produits utilisés
+                        </p>
+                        <div style="background: #f0f0f0; height: 8px; border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, #34C759, #4CAF50); height: 100%; width: ${pourcentage}%; transition: width 0.3s ease;"></div>
+                        </div>
+                        <p style="margin: 0; color: #999; font-size: 0.8rem;">
+                            Expire dans ${joursRestants} jour${joursRestants > 1 ? 's' : ''}
+                        </p>
+                        ${joursRestants <= 7 ? `
+                            <button onclick="window.location.href='abonnement.html'" 
+                                    style="width: 100%; padding: 10px; margin-top: 12px; background: #FF9500; 
+                                           color: white; border: none; border-radius: 10px; font-weight: 600; 
+                                           cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.85rem;">
+                                ⏰ Renouveler maintenant
+                            </button>
+                        ` : ''}
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; font-size: 1.5rem; 
+                                   cursor: pointer; color: #999; padding: 0; line-height: 1;">
+                        ×
+                    </button>
+                </div>
+            `;
+            break;
+    }
+
+    banniere.innerHTML = contenu;
+    document.body.appendChild(banniere);
+}
+
+// ==================== CHARGEMENT PRODUITS ====================
+async function chargerProduits() {
+    try {
+        console.log('📦 Chargement des produits depuis Supabase...');
+        
+        if (!currentUser) {
+            console.warn('⚠️ Aucun utilisateur connecté');
+            return [];
+        }
+        
+        const { data, error } = await supabase
+            .from('produits')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        produits = (data || []).map(p => ({
+            id: p.id,
+            nom: p.nom,
+            description: p.description,
+            prix: p.prix,
+            stock: p.stock,
+            categorie: p.categorie,
+            statut: p.statut,
+            mainImage: p.main_image,
+            descriptionImages: p.description_images || [],
+            dateCreation: p.created_at,
+            dateDraft: p.date_draft
+        }));
+
+        filteredProduits = [...produits];
+        
+        sauvegarderDansLocalStorage();
+        afficherProduits();
+        
+        console.log(`✅ ${produits.length} produit(s) chargés depuis Supabase`);
+        
+        return produits;
+    } catch (error) {
+        console.error('❌ Erreur lors du chargement des produits:', error);
+        afficherNotification('❌ Erreur lors du chargement des produits', 'error');
+        return [];
+    }
+}
+
+function sauvegarderDansLocalStorage() {
+    try {
+        localStorage.setItem('produits_ecommerce', JSON.stringify(produits));
+        console.log('💾 Produits sauvegardés dans localStorage');
+    } catch (error) {
+        console.error('❌ Erreur sauvegarde localStorage:', error);
+    }
+}
+
+// ==================== AFFICHAGE PRODUITS ====================
+function afficherProduits() {
+    const grid = document.getElementById('productsGrid');
+    const countEl = document.getElementById('productsCount');
+
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    if (filteredProduits.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🛍️</div>
+                <h3 class="empty-title">Aucun produit trouvé</h3>
+                <p class="empty-text">Commencez par ajouter votre premier produit</p>
+                <button class="btn-add-product" onclick="window.location.href='tableau.html'">
+                    + Ajouter un produit
+                </button>
+            </div>
+        `;
+        if (countEl) countEl.textContent = '0 produit trouvé';
+        mettreAJourStatsSidebar();
+        return;
+    }
+
+    if (countEl) countEl.textContent = `${filteredProduits.length} produit(s) trouvé(s)`;
+
+    filteredProduits.forEach((produit, index) => {
+        const card = creerCarteProduit(produit, index);
+        grid.appendChild(card);
+    });
+    
+    mettreAJourStatsSidebar();
+}
+
+function creerCarteProduit(produit, index) {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.style.animationDelay = `${index * 0.1}s`;
+
+    // Ajouter badge spécial pour produits en brouillon avec date
+    let statusBadge = '';
+    if (produit.statut === 'published') {
+        statusBadge = '<span class="badge badge-published">✓ Publié</span>';
+    } else if (produit.dateDraft) {
+        const joursBrouillon = Math.floor((new Date() - new Date(produit.dateDraft)) / (1000 * 60 * 60 * 24));
+        const joursRestants = 14 - joursBrouillon;
+        
+        if (joursRestants <= 7 && joursRestants > 0) {
+            statusBadge = `<span class="badge" style="background: rgba(255, 149, 0, 0.9); color: white;">📝 Brouillon (${joursRestants}j)</span>`;
+        } else if (joursRestants <= 0) {
+            statusBadge = '<span class="badge" style="background: rgba(255, 59, 48, 0.9); color: white;">⚠️ À supprimer</span>';
+        } else {
+            statusBadge = '<span class="badge badge-draft">📝 Brouillon</span>';
+        }
+    } else {
+        statusBadge = '<span class="badge badge-draft">📝 Brouillon</span>';
+    }
+
+    const descImagesHtml = produit.descriptionImages && produit.descriptionImages.filter(img => img).length > 0
+        ? `<div class="product-images-preview">
+            ${produit.descriptionImages.filter(img => img).slice(0, 4).map(img => 
+                `<img src="${img}" class="mini-image" alt="Description">`
+            ).join('')}
+           </div>`
+        : '';
+
+    card.innerHTML = `
+        <div class="product-image-container">
+            <img src="${produit.mainImage || 'https://via.placeholder.com/300x250'}" 
+                 class="product-image" 
+                 alt="${produit.nom}"
+                 onerror="this.src='https://via.placeholder.com/300x250?text=Image+non+disponible'">
+            <div class="product-badges">
+                ${statusBadge}
+                <span class="badge badge-category">${produit.categorie}</span>
+            </div>
+        </div>
+        
+        <div class="product-content">
+            <h3 class="product-title">${produit.nom}</h3>
+            <p class="product-description">${produit.description}</p>
+            
+            ${descImagesHtml}
+            
+            <div class="product-info">
+                <div class="product-price">${produit.prix.toLocaleString('fr-FR')} FCFA</div>
+                <div class="product-stock">
+                    <div class="stock-label">Stock</div>
+                    <div class="stock-value ${produit.stock > 0 ? 'in-stock' : 'out-of-stock'}">
+                        ${produit.stock}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-actions">
+                <button class="btn-product btn-view" onclick="voirDetails(${produit.id})">
+                    👁️ Voir
+                </button>
+                <button class="btn-product btn-edit" onclick="modifierProduit(${produit.id})">
+                    ✏️ Modifier
+                </button>
+                <button class="btn-product btn-delete" onclick="supprimerProduit(${produit.id})">
+                    🗑️ Supprimer
+                </button>
+            </div>
+        </div>
+    `;
+
+    return card;
+}
+
+function mettreAJourStatsSidebar() {
+    const totalProducts = produits.length;
+    const publishedProducts = produits.filter(p => p.statut === 'published').length;
+    const draftProducts = produits.filter(p => p.statut === 'draft').length;
+    
+    const totalEl = document.getElementById('totalProducts');
+    const publishedEl = document.getElementById('publishedProducts');
+    const draftEl = document.getElementById('draftProducts');
+    
+    if (totalEl) totalEl.textContent = totalProducts;
+    if (publishedEl) publishedEl.textContent = publishedProducts;
+    if (draftEl) draftEl.textContent = draftProducts;
+}
+
+// Export pour partie 4
+window.chargerProduits = chargerProduits;
+window.afficherProduits = afficherProduits;
+// ==================== PARTIE 4: FILTRES, MODAL & ACTIONS ====================
+
+// ==================== FILTRES ====================
+function initFilters() {
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortFilter = document.getElementById('sortFilter');
+
+    searchInput?.addEventListener('input', appliquerFiltres);
+    categoryFilter?.addEventListener('change', appliquerFiltres);
+    statusFilter?.addEventListener('change', appliquerFiltres);
+    sortFilter?.addEventListener('change', appliquerFiltres);
+}
+
+function appliquerFiltres() {
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortFilter = document.getElementById('sortFilter');
+
+    const searchTerm = searchInput?.value.toLowerCase() || '';
+    const category = categoryFilter?.value || '';
+    const status = statusFilter?.value || '';
+    const sort = sortFilter?.value || 'recent';
+
+    filteredProduits = produits.filter(produit => {
+        const matchSearch = produit.nom.toLowerCase().includes(searchTerm) || 
+                           produit.description.toLowerCase().includes(searchTerm);
+        const matchCategory = !category || produit.categorie === category;
+        const matchStatus = !status || produit.statut === status;
+        
+        return matchSearch && matchCategory && matchStatus;
+    });
+
+    switch(sort) {
+        case 'name':
+            filteredProduits.sort((a, b) => a.nom.localeCompare(b.nom));
+            break;
+        case 'price-asc':
+            filteredProduits.sort((a, b) => a.prix - b.prix);
+            break;
+        case 'price-desc':
+            filteredProduits.sort((a, b) => b.prix - a.prix);
+            break;
+        case 'stock':
+            filteredProduits.sort((a, b) => b.stock - a.stock);
+            break;
+        case 'recent':
+        default:
+            filteredProduits.sort((a, b) => new Date(b.dateCreation) - new Date(a.dateCreation));
+            break;
+    }
+
+    afficherProduits();
+}
+
+// ==================== MODAL DÉTAILS ====================
+function voirDetails(idProduit) {
+    const produit = produits.find(p => p.id === idProduit);
+    if (!produit) return;
+
+    const modal = document.getElementById('productModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+
+    if (!modal || !modalTitle || !modalBody) return;
+
+    modalTitle.textContent = produit.nom;
+
+    const descImagesHtml = produit.descriptionImages && produit.descriptionImages.filter(img => img).length > 0
+        ? produit.descriptionImages.filter(img => img).map(img => 
+            `<img src="${img}" class="modal-desc-image" alt="Description" onerror="this.style.display='none'">`
+          ).join('')
+        : '';
+
+    // Afficher info date draft si brouillon
+    let draftInfo = '';
+    if (produit.statut === 'draft' && produit.dateDraft) {
+        const joursBrouillon = Math.floor((new Date() - new Date(produit.dateDraft)) / (1000 * 60 * 60 * 24));
+        const joursRestants = 14 - joursBrouillon;
+        
+        if (joursRestants > 0) {
+            draftInfo = `
+                <div style="padding: 16px; background: rgba(255, 149, 0, 0.1); border-radius: 12px; border-left: 4px solid #FF9500; margin-bottom: 24px;">
+                    <p style="font-size: 0.9rem; color: #FF9500; margin: 0;">
+                        <strong>⚠️ Produit en brouillon:</strong> Sera supprimé dans ${joursRestants} jour${joursRestants > 1 ? 's' : ''} si non réactivé
+                    </p>
+                </div>
+            `;
+        } else {
+            draftInfo = `
+                <div style="padding: 16px; background: rgba(255, 59, 48, 0.1); border-radius: 12px; border-left: 4px solid #FF3B30; margin-bottom: 24px;">
+                    <p style="font-size: 0.9rem; color: #FF3B30; margin: 0;">
+                        <strong>🚫 Attention:</strong> Ce produit sera bientôt supprimé automatiquement
+                    </p>
+                </div>
+            `;
+        }
+    }
+
+    modalBody.innerHTML = `
+        ${draftInfo}
+        
+        <div class="modal-images">
+            <img src="${produit.mainImage}" class="modal-main-image" alt="${produit.nom}"
+                 onerror="this.src='https://via.placeholder.com/600x400?text=Image+non+disponible'">
+            ${descImagesHtml}
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <h3 style="font-size: 1.3rem; font-weight: 600; color: var(--primary-color); margin-bottom: 12px;">
+                Description
+            </h3>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                ${produit.description}
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px;">
+            <div style="padding: 16px; background: var(--gradient-soft); border-radius: 12px;">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">Prix</p>
+                <p style="font-size: 1.3rem; font-weight: 700; color: var(--primary-color);">
+                    ${produit.prix.toLocaleString('fr-FR')} FCFA
+                </p>
+            </div>
+
+            <div style="padding: 16px; background: var(--gradient-soft); border-radius: 12px;">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">Stock</p>
+                <p style="font-size: 1.3rem; font-weight: 700; color: ${produit.stock > 0 ? '#4CAF50' : '#f44336'};">
+                    ${produit.stock}
+                </p>
+            </div>
+
+            <div style="padding: 16px; background: var(--gradient-soft); border-radius: 12px;">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">Catégorie</p>
+                <p style="font-size: 1rem; font-weight: 600; color: var(--text-primary);">
+                    ${produit.categorie}
+                </p>
+            </div>
+
+            <div style="padding: 16px; background: var(--gradient-soft); border-radius: 12px;">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px;">Statut</p>
+                <p style="font-size: 1rem; font-weight: 600; color: ${produit.statut === 'published' ? '#4CAF50' : '#FF9800'};">
+                    ${produit.statut === 'published' ? '✓ Publié' : '📝 Brouillon'}
+                </p>
+            </div>
+        </div>
+
+        <div style="padding: 16px; background: rgba(199, 125, 255, 0.05); border-radius: 12px; border-left: 4px solid var(--primary-color);">
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                <strong>Créé le:</strong> ${new Date(produit.dateCreation).toLocaleDateString('fr-FR', { 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}
+            </p>
+        </div>
+    `;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    const modal = document.getElementById('productModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+document.getElementById('productModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'productModal') {
+        closeModal();
+    }
+});
+
+// ==================== MODIFICATION PRODUIT ====================
+function modifierProduit(idProduit) {
+    localStorage.setItem('produit_en_edition', idProduit);
+    window.location.href = 'tableau.html';
+}
+
+async function verifierEdition() {
+    const idProduit = localStorage.getItem('produit_en_edition');
+    
+    if (idProduit && window.location.pathname.includes('tableau.html')) {
+        await chargerProduitPourEdition(parseInt(idProduit));
+        localStorage.removeItem('produit_en_edition');
+    }
+}
+
+async function chargerProduitPourEdition(id) {
+    try {
+        if (!currentUser) return;
+        
+        const { data, error } = await supabase
+            .from('produits')
+            .select('*')
+            .eq('id', id)
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (error) throw error;
+
+        if (typeof window.chargerProduitDansFormulaire === 'function') {
+            window.chargerProduitDansFormulaire(data);
+        }
+    } catch (error) {
+        console.error('❌ Erreur chargement produit:', error);
+        afficherNotification('❌ Erreur lors du chargement du produit', 'error');
+    }
+}
+
+// ==================== SUPPRESSION PRODUIT ====================
+async function supprimerProduit(idProduit) {
+    const produit = produits.find(p => p.id === idProduit);
+    if (!produit) return;
+
+    if (confirm(`⚠️ Êtes-vous sûr de vouloir supprimer "${produit.nom}" ?\n\nCette action est irréversible.`)) {
+        try {
+            const { error } = await supabase
+                .from('produits')
+                .delete()
+                .eq('id', idProduit)
+                .eq('user_id', currentUser.id);
+
+            if (error) throw error;
+
+            const index = produits.findIndex(p => p.id === idProduit);
+            if (index !== -1) {
+                produits.splice(index, 1);
+            }
+
+            sauvegarderDansLocalStorage();
+            appliquerFiltres();
+            afficherNotification('✅ Produit supprimé avec succès', 'success');
+        } catch (error) {
+            console.error('❌ Erreur lors de la suppression:', error);
+            afficherNotification('❌ Erreur lors de la suppression du produit', 'error');
+        }
+    }
+}
+
+// ==================== EXPORT ====================
+async function exportToJSON() {
+    if (produits.length === 0) {
+        afficherNotification('⚠️ Aucun produit à exporter', 'warning');
+        return;
+    }
+
+    const dataStr = JSON.stringify(produits, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const lien = document.createElement('a');
+    lien.href = url;
+    lien.download = `produits_${new Date().toISOString().split('T')[0]}.json`;
+    lien.click();
+    
+    URL.revokeObjectURL(url);
+    afficherNotification('📥 Produits exportés avec succès', 'success');
+}
+
+// ==================== NOTIFICATIONS ====================
+function afficherNotification(message, type = 'info') {
+    let conteneur = document.getElementById('notification-container');
+
+    if (!conteneur) {
+        conteneur = document.createElement('div');
+        conteneur.id = 'notification-container';
+        conteneur.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        `;
+        document.body.appendChild(conteneur);
+    }
+
+    const couleurs = {
+        success: '#4CAF50',
+        error: '#f44336',
+        info: '#007AFF',
+        warning: '#FF9800'
+    };
+
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        background: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid ${couleurs[type]};
+        animation: slideIn 0.5s ease;
+        max-width: 350px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        color: #333;
+    `;
+    notification.textContent = message;
+
+    conteneur.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
+}
+
+// ==================== ANIMATIONS CSS ====================
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        to {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    #subscription-banner {
+        animation: slideInRight 0.5s ease;
+    }
+`;
+document.head.appendChild(style);
+
+// ==================== RACCOURCIS CLAVIER ====================
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('searchInput')?.focus();
+    }
+
+    if (e.key === 'Escape') {
+        closeModal();
+        
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const hamburgerOverlay = document.getElementById('hamburgerOverlay');
+        
+        if (hamburgerMenu?.classList.contains('active')) {
+            hamburgerBtn?.classList.remove('active');
+            hamburgerMenu?.classList.remove('active');
+            hamburgerOverlay?.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+});
+
+// ==================== LOG DÉMARRAGE ====================
+console.log('%c🌸 Page Produits - Ma Boutique Élégante 🌸', 'color: #007AFF; font-size: 20px; font-weight: bold;');
+console.log('%c✅ Connecté à Supabase + Système d\'abonnement actif', 'color: #4CAF50; font-weight: bold;');
+console.log('%c🔒 Plan gratuit: 10 produits | Brouillons supprimés après 14 jours', 'color: #FF9500; font-weight: bold;');
+console.log('%c💾 Les produits sont automatiquement synchronisés', 'color: #2196F3; font-size: 12px;');
+</script>
+</html>

@@ -1,0 +1,3096 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - Ma Boutique Élégante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="oda.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="styles-param.css">
+</head>
+<style>
+    /* ==================== VARIABLES ==================== */
+:root {
+    --primary-color: #007AFF;
+    --secondary-color: #5856D6;
+    --success-color: #34C759;
+    --warning-color: #FF9500;
+    --danger-color: #FF3B30;
+    --bg-primary: #F5F5F7;
+    --bg-secondary: #FFFFFF;
+    --text-primary: #1D1D1F;
+    --text-secondary: #6E6E73;
+    --border-color: #D2D2D7;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ==================== HEADER ==================== */
+.main-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.hamburger-btn {
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn:hover {
+    background: var(--bg-primary);
+}
+
+.hamburger-btn span {
+    width: 100%;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-image {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-primary);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+    background: var(--border-color);
+    transform: translateY(-2px);
+}
+
+.badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--danger-color);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 6px;
+    background: var(--bg-primary);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.user-profile:hover {
+    background: var(--border-color);
+}
+
+.avatar-image {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--success-color), var(--primary-color));
+    border-radius: 50%;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+/* Cacher le menu hamburger en mode mobile */
+@media (max-width: 768px) {
+    .hamburger-btn {
+        display: none !important;
+    }
+    
+    .settings-sidebar {
+        display: none !important;
+    }
+    
+    .settings-container {
+        grid-template-columns: 1fr !important;
+        padding-bottom: 100px !important;
+    }
+    
+    .brand-section .brand-name {
+        font-size: 0.9rem;
+    }
+    
+    .header-container {
+        padding: 10px 12px;
+    }
+}
+/* ==================== MENU HAMBURGER ==================== */
+.hamburger-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.hamburger-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.hamburger-menu {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 280px;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-lg);
+    z-index: 1999;
+    transition: left 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.hamburger-menu.active {
+    left: 0;
+}
+
+.hamburger-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-menu {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.close-menu:hover {
+    background: var(--border-color);
+    transform: rotate(90deg);
+}
+
+.hamburger-nav {
+    flex: 1;
+    padding: 16px;
+}
+
+.hamburger-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    text-decoration: none;
+    color: var(--text-primary);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+}
+
+.hamburger-link:hover {
+    background: var(--bg-primary);
+    transform: translateX(4px);
+}
+
+.hamburger-link.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.link-icon {
+    font-size: 1.25rem;
+}
+
+.hamburger-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 12px 0;
+}
+
+.hamburger-footer {
+    padding: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ==================== CONTAINER ==================== */
+.settings-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 32px;
+}
+
+/* ==================== SIDEBAR ==================== */
+.settings-sidebar {
+    background: var(--bg-secondary);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+.settings-menu {
+    list-style: none;
+}
+
+.settings-menu-item {
+    margin-bottom: 4px;
+}
+
+.settings-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.settings-menu-link:hover {
+    background: var(--bg-primary);
+    color: var(--primary-color);
+}
+
+.settings-menu-link.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.settings-icon {
+    font-size: 1.2rem;
+}
+
+/* ==================== CONTENT ==================== */
+.settings-content {
+    min-height: 500px;
+}
+
+.settings-section {
+    background: var(--bg-secondary);
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    animation: fadeIn 0.4s ease;
+}
+
+.section-header {
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--bg-primary);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.section-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* ==================== FORMULAIRES ==================== */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ==================== BOUTONS ==================== */
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-confirm {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-confirm {
+    background: var(--success-color);
+    color: white;
+    margin-top: 8px;
+}
+
+.btn-confirm:hover {
+    background: #2eae48;
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #d32f2f;
+}
+
+/* ==================== TOGGLE SWITCH ==================== */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: 0.3s;
+    border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* ==================== SETTING ITEMS ==================== */
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--bg-primary);
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.setting-info h4 {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.setting-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ==================== PAIEMENT ==================== */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.payment-card {
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.payment-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.payment-icon {
+    font-size: 2rem;
+}
+
+.payment-info h4 {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.payment-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.payment-details {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.info-text {
+    color: var(--success-color);
+    font-weight: 500;
+    padding: 8px 0;
+}
+
+/* ==================== IDENTIFIANT ==================== */
+.input-with-prefix {
+    display: flex;
+    align-items: center;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.input-with-prefix:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.input-prefix {
+    background: var(--bg-primary);
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.input-with-prefix .form-input {
+    border: none;
+    box-shadow: none;
+}
+
+.slug-status {
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.slug-status.available {
+    background: rgba(52, 199, 89, 0.1);
+    color: var(--success-color);
+}
+
+.slug-status.unavailable {
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--danger-color);
+}
+
+.preview-url {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--bg-primary);
+    border-radius: 10px;
+}
+
+.url-preview {
+    margin-top: 8px;
+    font-family: monospace;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+.alert-info {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(0, 122, 255, 0.1);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 10px;
+    margin-bottom: 24px;
+}
+
+.alert-icon {
+    font-size: 1.5rem;
+}
+
+/* ==================== DANGER ZONE ==================== */
+.danger-zone {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 2px solid var(--bg-primary);
+}
+
+.danger-zone h4 {
+    color: var(--danger-color);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.danger-zone p {
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+}
+
+.danger-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.color-picker {
+    width: 60px;
+    height: 40px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.preset-btn:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background: rgba(0, 122, 255, 0.05);
+}
+
+.preview-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.preview-btn-secondary:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.appearance-group {
+    margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* ==================== MOBILE MONEY STYLES ==================== */
+
+.mobile-money-section {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: var(--bg-primary);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.mobile-money-section:hover {
+    background: #F0F0F2;
+}
+
+.mobile-money-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.mobile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-money-header h5 {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Toggle Switch Small */
+.toggle-switch-small {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch-small input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider-small {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider-small:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .toggle-slider-small {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+input:checked + .toggle-slider-small:before {
+    transform: translateX(20px);
+}
+
+/* Inputs Mobile Money */
+.mobile-money-inputs {
+    margin-top: 16px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mobile-money-inputs .form-group {
+    margin-bottom: 16px;
+}
+
+.mobile-money-inputs .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.mobile-divider {
+    height: 1px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        var(--border-color) 20%,
+        var(--border-color) 80%,
+        transparent
+    );
+    margin: 20px 0;
+}
+
+/* Animation pour le bouton confirmer */
+.btn-confirm {
+    width: 100%;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+}
+
+.btn-confirm:active {
+    transform: translateY(0);
+}
+
+/* Badge de statut */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.status-badge.active {
+    background: rgba(52, 199, 89, 0.1);
+    color: var(--success-color);
+}
+
+.status-badge.inactive {
+    background: rgba(142, 142, 147, 0.1);
+    color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mobile-money-header {
+        flex-wrap: wrap;
+    }
+    
+    .mobile-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+    
+    .mobile-money-header h5 {
+        font-size: 0.95rem;
+    }
+    
+    .toggle-switch-small {
+        width: 40px;
+        height: 22px;
+    }
+    
+    .toggle-slider-small:before {
+        height: 16px;
+        width: 16px;
+    }
+}
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+    .settings-container {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-sidebar {
+        position: relative;
+        top: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-container {
+        padding: 12px 16px;
+    }
+
+    .brand-name {
+        font-size: 1rem;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .settings-container {
+        padding: 20px 16px;
+    }
+
+    .settings-section {
+        padding: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .setting-item {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+
+    .danger-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-danger,
+    .btn-confirm {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-title {
+        font-size: 1.2rem;
+    }
+}
+/* Styles pour l'affichage de l'identifiant actuel */
+#identifiantActuel h4 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+}
+
+#lienBoutique {
+    transition: all 0.3s ease;
+}
+
+#lienBoutique:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.url-preview {
+    padding: 12px 16px;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    word-break: break-all;
+}
+/* ==================== MENU NAVIGATION MOBILE (ANDROID STYLE) ==================== */
+
+#menu-mobile-android {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1A1A1A;
+    display: flex;
+    justify-content: flex-start; /* Changé de space-around à flex-start */
+    align-items: center;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    border-radius: 24px 24px 0 0;
+    overflow-x: auto; /* Permet le scroll horizontal */
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch; /* Scroll fluide sur iOS */
+    gap: 4px; /* Espacement entre les boutons */
+}
+
+/* Cacher la scrollbar mais garder la fonctionnalité */
+#menu-mobile-android::-webkit-scrollbar {
+    display: none;
+}
+
+#menu-mobile-android {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.menu-mobile-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    color: #8E8E93;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    min-width: 65px; /* Largeur fixe pour chaque bouton */
+    flex-shrink: 0; /* Empêche les boutons de rétrécir */
+}
+
+.menu-mobile-btn .link-icon {
+    font-size: 22px;
+    transition: transform 0.3s ease;
+}
+
+.menu-mobile-btn span:last-child {
+    font-size: 9px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+    text-align: center;
+}
+
+.menu-mobile-btn.active {
+    color: #FF6B00;
+}
+
+.menu-mobile-btn.active span:last-child {
+    font-weight: 600;
+}
+
+/* Indicateur actif */
+.menu-mobile-btn .active-indicator {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: #FF6B00;
+    border-radius: 2px;
+}
+
+/* Effet tactile */
+.menu-mobile-btn:active {
+    transform: scale(0.95);
+}
+
+/* Hover effect (pour les appareils avec souris) */
+@media (hover: hover) {
+    .menu-mobile-btn:hover {
+        background: rgba(255, 107, 0, 0.1);
+    }
+}
+
+/* Animation d'apparition */
+@keyframes slideUpMenu {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#menu-mobile-android {
+    animation: slideUpMenu 0.3s ease;
+}
+
+</style>
+<body>
+    <!-- Menu Hamburger Overlay -->
+    <div class="hamburger-overlay" id="hamburgerOverlay"></div>
+    
+    <!-- Menu Hamburger -->
+    <div class="hamburger-menu" id="hamburgerMenu">
+        <div class="hamburger-header">
+            <div class="brand-section">
+                <div class="logo-image"></div>
+                <h1 class="brand-name">ODA</h1>
+            </div>
+            <button class="close-menu" id="closeMenu">
+                <span>×</span>
+            </button>
+        </div>
+        
+        <nav class="hamburger-nav">
+            <a href="tableau.html" class="hamburger-link">
+                <span class="link-icon">📊</span>
+                <span>Tableau de bord</span>
+            </a>
+            <a href="produit.html" class="hamburger-link">
+                <span class="link-icon">📦</span>
+                <span>Produits</span>
+            </a>
+            <a href="commandes.html" class="hamburger-link">
+                <span class="link-icon">📋</span>
+                <span>Commandes</span>
+            </a>
+            <a href="clients.html" class="hamburger-link">
+                <span class="link-icon">👥</span>
+                <span>Clients</span>
+            </a>
+            <a href="messages.html" class="hamburger-link">
+                <span class="link-icon">💬</span>
+                <span>Messages</span>
+            </a>
+            
+            <div class="hamburger-divider"></div>
+            
+            <a href="statistique.html" class="hamburger-link">
+                <span class="link-icon">📈</span>
+                <span>Statistiques</span>
+            </a>
+            <a href="parametres.html" class="hamburger-link active">
+                <span class="link-icon">⚙️</span>
+                <span>Paramètres</span>
+            </a>
+            <a href="boutique.html" class="hamburger-link">
+                <span class="link-icon">🪟</span>
+                <span>Voir ma boutique</span>
+            </a>
+        </nav>
+        
+        <div class="hamburger-footer">
+            <button class="hamburger-link">
+                <span class="link-icon">↗️</span>
+                <span>Open Externally</span>
+            </button>
+            <button class="hamburger-link">
+                <span class="link-icon">🔗</span>
+                <span>Partager la page</span>
+            </button>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="header-container">
+            <button class="hamburger-btn" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="brand-section">
+                <div class="logo-image"></div>
+                <h1 class="brand-name">Paramètres</h1>
+            </div>
+
+            <div class="header-actions">
+                <button class="icon-btn notification-btn">
+                    <span>🔔</span>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar-image"></div>
+                    <span class="user-name">Admin</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="settings-container">
+        <aside class="settings-sidebar">
+            <ul class="settings-menu">
+                <li class="settings-menu-item">
+                    <a href="#general" class="settings-menu-link active" data-section="general">
+                        <span class="settings-icon">🏪</span>
+                        <span>Général</span>
+                    </a>
+                </li>
+                <li class="settings-menu-item">
+                    <a href="#identifiant" class="settings-menu-link" data-section="identifiant">
+                        <span class="settings-icon">🔖</span>
+                        <span>Identifiant unique</span>
+                    </a>
+                </li>
+                <li class="settings-menu-item">
+                    <a href="#payment" class="settings-menu-link" data-section="payment">
+                        <span class="settings-icon">💳</span>
+                        <span>Paiement</span>
+                    </a>
+                </li>
+                <li class="settings-menu-item">
+                    <a href="#shipping" class="settings-menu-link" data-section="shipping">
+                        <span class="settings-icon">📦</span>
+                        <span>Livraison</span>
+                    </a>
+                </li>
+                <li class="settings-menu-item">
+                    <a href="#notifications" class="settings-menu-link" data-section="notifications">
+                        <span class="settings-icon">🔔</span>
+                        <span>Notifications</span>
+                    </a>
+                </li>
+                <li class="settings-menu-item">
+                    <a href="#security" class="settings-menu-link" data-section="security">
+                        <span class="settings-icon">🔒</span>
+                        <span>Sécurité</span>
+                    </a>
+                    <a href="#apparence" class="settings-menu-link" data-section="apparence">
+                        <span class="settings-icon">🎨</span>
+                        <span>Apparence</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="settings-content">
+            <!-- Section Général -->
+            <section id="general" class="settings-section">
+                <div class="section-header">
+                    <h3 class="section-title">Informations générales</h3>
+                    <p class="section-description">Configurez les informations de base de votre boutique</p>
+                </div>
+
+                <form id="generalForm">
+                    <div class="form-group">
+                        <label class="form-label">Nom de la boutique</label>
+                        <input type="text" class="form-input" id="shopName" placeholder="Ma Boutique Élégante">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="shopDescription" placeholder="Décrivez votre boutique..."></textarea>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Email de contact</label>
+                            <input type="email" class="form-input" id="shopEmail" placeholder="contact@boutique.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Téléphone</label>
+                            <input type="tel" class="form-input" id="shopPhone" placeholder="+237 6 XX XX XX XX">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Adresse</label>
+                        <input type="text" class="form-input" id="shopAddress" placeholder="Douala, Cameroun">
+                    </div>
+
+                    <button type="submit" class="btn-primary">💾 Enregistrer les modifications</button>
+                </form>
+            </section>
+
+            <section id="identifiant" class="settings-section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">Identifiant unique de la boutique</h3>
+                    <p class="section-description">Créez un nom unique pour votre boutique (URL personnalisée)</p>
+                </div>
+            
+                <div class="alert-info">
+                    <span class="alert-icon">ℹ️</span>
+                    <div>
+                        <strong>À quoi sert l'identifiant unique ?</strong>
+                        <p>Cet identifiant sera utilisé dans l'URL de votre boutique et permettra à vos clients d'accéder directement à votre boutique.</p>
+                    </div>
+                </div>
+            
+                <!-- Affichage de l'identifiant actuel -->
+                <div id="identifiantActuel" style="display: none; margin-bottom: 24px; padding: 20px; background: linear-gradient(135deg, rgba(52, 199, 89, 0.1), rgba(52, 199, 89, 0.05)); border-radius: 12px; border-left: 4px solid #34C759;">
+                    <h4 style="margin-bottom: 12px; color: #34C759; font-weight: 600;">✅ Identifiant actif</h4>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                        <span style="font-family: monospace; font-size: 1.1rem; font-weight: 600;">@</span>
+                        <span id="identifiantActif" style="font-family: monospace; font-size: 1.1rem; font-weight: 600; color: var(--primary-color);"></span>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <strong>Lien de votre boutique :</strong>
+                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
+                            <input type="text" id="lienBoutique" readonly style="flex: 1; padding: 10px; border: 2px solid #E5E7EB; border-radius: 8px; font-family: monospace; background: white;">
+                            <button type="button" onclick="copierLienBoutique()" class="btn-secondary" style="padding: 10px 20px; white-space: nowrap;">
+                                📋 Copier
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="afficherFormulaireModification()" class="btn-secondary" style="background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color);">
+                        ✏️ Modifier l'identifiant
+                    </button>
+                </div>
+            
+                <!-- Formulaire de création/modification -->
+                <form id="identifiantForm">
+                    <div class="form-group">
+                        <label class="form-label">Identifiant unique (slug)</label>
+                        <div class="input-with-prefix">
+                            <span class="input-prefix">@</span>
+                            <input type="text" class="form-input" id="shopSlug" placeholder="ma-boutique-elegante" pattern="[a-z0-9-]+" maxlength="50">
+                        </div>
+                        <small class="form-hint">Uniquement des lettres minuscules, chiffres et tirets (minimum 3 caractères)</small>
+                        <div id="slugAvailability" class="slug-status"></div>
+                    </div>
+            
+                    <div class="preview-url">
+                        <strong>Aperçu de votre URL :</strong>
+                        <div class="url-preview">
+                            <span id="urlBase"></span><span>?shop=</span><span id="slugPreview">votre-identifiant</span>
+                        </div>
+                    </div>
+            
+                    <button type="submit" class="btn-primary">🔖 Définir l'identifiant</button>
+                </form>
+            </section>
+
+            <!-- Section Paiement -->
+            <section id="payment" class="settings-section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">Méthodes de paiement</h3>
+                    <p class="section-description">Configurez vos options de paiement</p>
+                </div>
+
+                <div class="payment-methods">
+                    <div class="payment-card">
+                        <div class="payment-header">
+                            <div class="payment-info">
+                                <span class="payment-icon">💳</span>
+                                <div>
+                                    <h4>Carte bancaire</h4>
+                                    <p>Visa, Mastercard, American Express</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="paymentCard">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="payment-details" id="cardDetails" style="display: none;">
+                            <input type="text" class="form-input" placeholder="Clé API Stripe" id="stripeKey">
+                            <button type="button" class="btn-confirm" onclick="confirmerPaiement('card')">✓ Confirmer</button>
+                        </div>
+                    </div>
+
+                    <div class="payment-card">
+                        <div class="payment-header">
+                            <div class="payment-info">
+                                <span class="payment-icon">📱</span>
+                                <div>
+                                    <h4>Mobile Money</h4>
+                                    <p>MTN Money & Orange Money</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="paymentMobile">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-details" id="mobileDetails" style="display: none;">
+                            <!-- Section MTN Money -->
+                            <div class="mobile-money-section">
+                                <div class="mobile-money-header">
+                                    <span class="mobile-icon" style="background: #FFCC00; color: #000;">📞</span>
+                                    <h5>MTN Money</h5>
+                                    <label class="toggle-switch-small">
+                                        <input type="checkbox" id="mtnActive">
+                                        <span class="toggle-slider-small"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="mobile-money-inputs" id="mtnInputs" style="display: none;">
+                                    <div class="form-group">
+                                        <label class="form-label">Nom du compte MTN</label>
+                                        <input type="text" 
+                                               class="form-input" 
+                                               id="mtnNomCompte" 
+                                               placeholder="Ex: KAMGA Jean">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Numéro MTN Money</label>
+                                        <input type="tel" 
+                                               class="form-input" 
+                                               id="mtnNumero" 
+                                               placeholder="+237 6 XX XX XX XX"
+                                               pattern="[0-9+\s]*">
+                                        <small class="form-hint">Format: +237 6XX XX XX XX</small>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="mobile-divider"></div>
+                    
+                            <!-- Section Orange Money -->
+                            <div class="mobile-money-section">
+                                <div class="mobile-money-header">
+                                    <span class="mobile-icon" style="background: #FF7900; color: #fff;">🍊</span>
+                                    <h5>Orange Money</h5>
+                                    <label class="toggle-switch-small">
+                                        <input type="checkbox" id="orangeActive">
+                                        <span class="toggle-slider-small"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="mobile-money-inputs" id="orangeInputs" style="display: none;">
+                                    <div class="form-group">
+                                        <label class="form-label">Nom du compte Orange</label>
+                                        <input type="text" 
+                                               class="form-input" 
+                                               id="orangeNomCompte" 
+                                               placeholder="Ex: KAMGA Jean">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Numéro Orange Money</label>
+                                        <input type="tel" 
+                                               class="form-input" 
+                                               id="orangeNumero" 
+                                               placeholder="+237 6 XX XX XX XX"
+                                               pattern="[0-9+\s]*">
+                                        <small class="form-hint">Format: +237 6XX XX XX XX</small>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <button type="button" class="btn-confirm" id="confirmerMobileMoney">
+                                ✓ Confirmer les paramètres Mobile Money
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="payment-card">
+                        <div class="payment-header">
+                            <div class="payment-info">
+                                <span class="payment-icon">💵</span>
+                                <div>
+                                    <h4>Paiement à la livraison</h4>
+                                    <p>Espèces à la réception</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="paymentCash">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="payment-details" id="cashDetails" style="display: none;">
+                            <p class="info-text">✓ Aucune configuration requise</p>
+                            <button type="button" class="btn-confirm" onclick="confirmerPaiement('cash')">✓ Confirmer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 32px;">
+                    <label class="form-label">Devise</label>
+                    <select class="form-select" id="currency">
+                        <option value="FCFA">FCFA (Franc CFA)</option>
+                        <option value="EUR">EUR (Euro)</option>
+                        <option value="USD">USD (Dollar)</option>
+                    </select>
+                </div>
+            </section>
+    
+
+
+          <!-- REMPLACEZ VOTRE SECTION LIVRAISON PAR CELLE-CI -->
+<section id="shipping" class="settings-section" style="display: none;">
+    <div class="section-header">
+        <h3 class="section-title">Options de livraison</h3>
+        <p class="section-description">Configurez vos zones et frais de livraison</p>
+    </div>
+
+    <form id="shippingForm">
+        <!-- Zones de livraison par défaut -->
+        <div style="background: var(--gradient-soft); padding: var(--spacing-lg); border-radius: var(--radius-lg); margin-bottom: var(--spacing-lg);">
+            <h4 style="color: var(--primary-color); margin-bottom: var(--spacing-md); font-weight: 600;">📍 Zones principales</h4>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Frais de livraison (Douala)</label>
+                    <input type="number" class="form-input" id="fraisDouala" value="1000" placeholder="0" min="0">
+                    <small style="color: var(--text-secondary); font-size: 0.85rem;">FCFA</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Frais de livraison (Autres villes)</label>
+                    <input type="number" class="form-input" id="fraisAutres" value="2500" placeholder="0" min="0">
+                    <small style="color: var(--text-secondary); font-size: 0.85rem;">FCFA</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zones de livraison personnalisées -->
+        <div style="margin-bottom: var(--spacing-lg);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+                <h4 style="color: var(--primary-color); font-weight: 600;">🗺️ Zones personnalisées</h4>
+                <button type="button" class="btn-secondary" id="ajouterZone" style="padding: var(--spacing-xs) var(--spacing-md); font-size: 0.9rem;">
+                    ➕ Ajouter une zone
+                </button>
+            </div>
+
+            <div id="zonesContainer">
+                <!-- Les zones personnalisées seront ajoutées ici dynamiquement -->
+            </div>
+
+            <div id="emptyZonesMessage" style="text-align: center; padding: var(--spacing-xl); color: var(--text-secondary); background: var(--gradient-soft); border-radius: var(--radius-lg); border: 2px dashed rgba(199, 125, 255, 0.2);">
+                <p style="font-size: 1.1rem; margin-bottom: var(--spacing-xs);">📦</p>
+                <p>Aucune zone personnalisée ajoutée</p>
+                <small style="font-size: 0.85rem;">Cliquez sur "Ajouter une zone" pour commencer</small>
+            </div>
+        </div>
+
+        <!-- Autres paramètres -->
+        <div class="form-group">
+            <label class="form-label">Délai de livraison estimé</label>
+            <input type="text" class="form-input" id="delaiLivraison" value="2-5 jours ouvrables" placeholder="Ex: 2-5 jours">
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-info">
+                <h4>🎁 Livraison gratuite</h4>
+                <p>Activer la livraison gratuite au-delà d'un montant</p>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="freeShipping">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Montant minimum pour livraison gratuite (FCFA)</label>
+            <input type="number" class="form-input" id="montantMinimum" value="50000" placeholder="50000" min="0">
+        </div>
+
+        <button type="submit" class="btn-primary">📦 Sauvegarder</button>
+    </form>
+</section>
+            <!-- Section Notifications -->
+            <section id="notifications" class="settings-section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">Préférences de notifications</h3>
+                    <p class="section-description">Gérez vos notifications et alertes</p>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Nouvelles commandes</h4>
+                        <p>Recevoir une notification pour chaque nouvelle commande</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifOrders">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Stock faible</h4>
+                        <p>Alerte quand un produit atteint le stock minimum</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifStock">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Nouveaux clients</h4>
+                        <p>Notification lors de l'inscription d'un nouveau client</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifClients">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h4>Rapports hebdomadaires</h4>
+                        <p>Recevoir un résumé des ventes chaque semaine</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifReports">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </section>
+            <!-- Section Sécurité -->
+            <section id="security" class="settings-section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">Sécurité et confidentialité</h3>
+                    <p class="section-description">Protégez votre compte et vos données</p>
+                </div>
+
+                <form id="securityForm">
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe actuel</label>
+                        <input type="password" class="form-input" id="currentPassword" placeholder="••••••••">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nouveau mot de passe</label>
+                        <input type="password" class="form-input" id="newPassword" placeholder="••••••••">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirmer le mot de passe</label>
+                        <input type="password" class="form-input" id="confirmPassword" placeholder="••••••••">
+                    </div>
+
+                    <button type="submit" class="btn-primary">🔒 Changer le mot de passe</button>
+                </form>
+
+                <div class="danger-zone">
+                    <h4>Zone de danger</h4>
+                    <p>Ces actions sont irréversibles. Procédez avec prudence.</p>
+                    <div class="danger-actions">
+                        <button type="button" class="btn-danger" onclick="exporterDonnees()">📥 Exporter mes données</button>
+                        <button type="button" class="btn-danger" onclick="supprimerCompte()">🗑️ Supprimer mon compte</button>
+                    </div>
+                </div>
+            </section>
+            <!-- Section Apparence complète (à ajouter après la section security) -->
+<section id="apparence" class="settings-section" style="display: none;">
+    <div class="section-header">
+        <h3 class="section-title">Personnalisation de l'apparence</h3>
+        <p class="section-description">Personnalisez les couleurs et l'identité visuelle de votre boutique en ligne</p>
+    </div>
+
+    <div class="alert-info" style="display: flex; gap: 12px; padding: 16px; background: rgba(0, 122, 255, 0.1); border-left: 4px solid var(--primary-color); border-radius: 10px; margin-bottom: 24px;">
+        <span style="font-size: 1.5rem;">ℹ️</span>
+        <div>
+            <strong>Information importante</strong>
+            <p style="margin-top: 4px; color: var(--text-secondary); font-size: 0.9rem;">
+                Les modifications d'apparence seront appliquées à votre boutique e-commerce en temps réel.
+            </p>
+        </div>
+    </div>
+
+    <!-- Couleurs -->
+    <div class="appearance-group">
+        <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">🎨 Couleurs du site</h4>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Couleur primaire</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <input type="color" class="color-picker" id="primaryColor" value="#FF6B00">
+                    <div class="color-preview" id="primaryColorPreview" style="width: 60px; height: 40px; border-radius: 8px; border: 2px solid var(--border-color); background: #FF6B00;"></div>
+                    <input type="text" class="form-input" id="primaryColorHex" value="#FF6B00" readonly style="max-width: 100px; font-family: monospace;">
+                </div>
+                <small class="form-hint">Couleur principale de votre boutique (boutons, liens, etc.)</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Couleur secondaire</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <input type="color" class="color-picker" id="secondaryColor" value="#1A1A1A">
+                    <div class="color-preview" id="secondaryColorPreview" style="width: 60px; height: 40px; border-radius: 8px; border: 2px solid var(--border-color); background: #1A1A1A;"></div>
+                    <input type="text" class="form-input" id="secondaryColorHex" value="#1A1A1A" readonly style="max-width: 100px; font-family: monospace;">
+                </div>
+                <small class="form-hint">Couleur secondaire (textes, arrière-plans)</small>
+            </div>
+        </div>
+
+        <div class="color-presets" style="margin-top: 16px;">
+            <label class="form-label">Palettes prédéfinies</label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-top: 8px;">
+                <button class="preset-btn" onclick="appliquerPalette('#FF6B00', '#1A1A1A')" style="padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; background: white; transition: all 0.3s ease;">
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                        <div style="flex: 1; height: 30px; background: #FF6B00; border-radius: 4px;"></div>
+                        <div style="flex: 1; height: 30px; background: #1A1A1A; border-radius: 4px;"></div>
+                    </div>
+                    <small style="font-size: 0.75rem; font-weight: 600;">Orange/Noir</small>
+                </button>
+
+                <button class="preset-btn" onclick="appliquerPalette('#007AFF', '#1D1D1F')" style="padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; background: white; transition: all 0.3s ease;">
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                        <div style="flex: 1; height: 30px; background: #007AFF; border-radius: 4px;"></div>
+                        <div style="flex: 1; height: 30px; background: #1D1D1F; border-radius: 4px;"></div>
+                    </div>
+                    <small style="font-size: 0.75rem; font-weight: 600;">Bleu/Noir</small>
+                </button>
+
+                <button class="preset-btn" onclick="appliquerPalette('#34C759', '#2C3E50')" style="padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; background: white; transition: all 0.3s ease;">
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                        <div style="flex: 1; height: 30px; background: #34C759; border-radius: 4px;"></div>
+                        <div style="flex: 1; height: 30px; background: #2C3E50; border-radius: 4px;"></div>
+                    </div>
+                    <small style="font-size: 0.75rem; font-weight: 600;">Vert/Bleu nuit</small>
+                </button>
+
+                <button class="preset-btn" onclick="appliquerPalette('#FF3B30', '#1A1A1A')" style="padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; background: white; transition: all 0.3s ease;">
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                        <div style="flex: 1; height: 30px; background: #FF3B30; border-radius: 4px;"></div>
+                        <div style="flex: 1; height: 30px; background: #1A1A1A; border-radius: 4px;"></div>
+                    </div>
+                    <small style="font-size: 0.75rem; font-weight: 600;">Rouge/Noir</small>
+                </button>
+
+                <button class="preset-btn" onclick="appliquerPalette('#9C27B0', '#212121')" style="padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; background: white; transition: all 0.3s ease;">
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                        <div style="flex: 1; height: 30px; background: #9C27B0; border-radius: 4px;"></div>
+                        <div style="flex: 1; height: 30px; background: #212121; border-radius: 4px;"></div>
+                    </div>
+                    <small style="font-size: 0.75rem; font-weight: 600;">Violet/Noir</small>
+                </button>
+
+                <button class="preset-btn" onclick="appliquerPalette('#FF9500', '#2C2C2E')" style="padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; background: white; transition: all 0.3s ease;">
+                    <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                        <div style="flex: 1; height: 30px; background: #FF9500; border-radius: 4px;"></div>
+                        <div style="flex: 1; height: 30px; background: #2C2C2E; border-radius: 4px;"></div>
+                    </div>
+                    <small style="font-size: 0.75rem; font-weight: 600;">Doré/Gris foncé</small>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="hamburger-divider" style="margin: 32px 0;"></div>
+
+    <!-- Police -->
+    <div class="appearance-group">
+        <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">📝 Typographie</h4>
+        
+        <div class="form-group">
+            <label class="form-label">Police d'écriture</label>
+            <select class="form-select" id="fontFamily">
+                <option value="Inter">Inter (Moderne)</option>
+                <option value="Poppins">Poppins (Arrondie)</option>
+                <option value="Roboto">Roboto (Classique)</option>
+                <option value="Montserrat">Montserrat (Élégante)</option>
+                <option value="Open Sans">Open Sans (Lisible)</option>
+                <option value="Lato">Lato (Professionnelle)</option>
+                <option value="Raleway">Raleway (Raffinée)</option>
+                <option value="Playfair Display">Playfair Display (Luxe)</option>
+            </select>
+            <small class="form-hint">Cette police sera utilisée sur tout votre site e-commerce</small>
+        </div>
+
+        <div class="font-preview" style="margin-top: 16px; padding: 20px; background: var(--bg-primary); border-radius: 12px; border: 2px solid var(--border-color);">
+            <p style="font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;" id="fontPreviewTitle">Aperçu de la police</p>
+            <p style="font-size: 0.9rem; color: var(--text-secondary);" id="fontPreviewText">
+                Voici comment apparaîtra le texte dans votre boutique. 
+                Les titres seront clairs et lisibles, tandis que les descriptions de produits seront agréables à lire.
+            </p>
+        </div>
+    </div>
+
+    <div class="hamburger-divider" style="margin: 32px 0;"></div>
+
+    <!-- Logo et Favicon -->
+    <div class="appearance-group">
+        <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">🖼️ Identité visuelle</h4>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Logo de la boutique</label>
+                <div class="upload-area" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="document.getElementById('logoUpload').click()">
+                    <div id="logoPreview" style="margin-bottom: 12px; min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                        <div style="color: var(--text-secondary);">
+                            <div style="font-size: 3rem; margin-bottom: 8px;">🖼️</div>
+                            <p style="font-weight: 600;">Cliquez pour charger un logo</p>
+                            <small style="font-size: 0.85rem;">PNG, JPG, SVG (max 2MB)</small>
+                        </div>
+                    </div>
+                </div>
+                <input type="file" id="logoUpload" accept="image/*" style="display: none;">
+                <small class="form-hint">Dimensions recommandées : 200x80 pixels</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Favicon (icône de l'onglet)</label>
+                <div class="upload-area" style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="document.getElementById('faviconUpload').click()">
+                    <div id="faviconPreview" style="margin-bottom: 12px; min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                        <div style="color: var(--text-secondary);">
+                            <div style="font-size: 3rem; margin-bottom: 8px;">🔖</div>
+                            <p style="font-weight: 600;">Cliquez pour charger un favicon</p>
+                            <small style="font-size: 0.85rem;">PNG, ICO (max 2MB)</small>
+                        </div>
+                    </div>
+                </div>
+                <input type="file" id="faviconUpload" accept="image/*" style="display: none;">
+                <small class="form-hint">Dimensions recommandées : 32x32 pixels</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="hamburger-divider" style="margin: 32px 0;"></div>
+
+    <!-- Aperçu en direct -->
+    <div class="appearance-group">
+        <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">👁️ Aperçu en direct</h4>
+        
+        <div class="live-preview" style="padding: 24px; background: var(--bg-primary); border-radius: 16px; border: 2px solid var(--border-color);">
+            <div style="margin-bottom: 16px;">
+                <button class="preview-btn-primary" style="padding: 12px 24px; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-right: 12px; transition: all 0.3s ease;">
+                    Bouton principal
+                </button>
+                <button class="preview-btn-secondary" style="padding: 12px 24px; background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    Bouton secondaire
+                </button>
+            </div>
+            
+            <div class="preview-card" style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <h3 style="color: var(--primary-color); margin-bottom: 8px; font-weight: 600;">Exemple de carte produit</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 12px;">
+                    Ceci est un aperçu de la façon dont vos produits apparaîtront avec les couleurs sélectionnées.
+                </p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary-color);">25,000 FCFA</span>
+                    <button style="padding: 8px 16px; background: var(--primary-color); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                        Ajouter au panier
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div style="display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap;">
+        <button type="button" class="btn-primary" id="saveAppearance">
+            💾 Sauvegarder l'apparence
+        </button>
+        <button type="button" class="btn-secondary" id="resetAppearance" style="background: transparent; color: var(--text-primary); border: 2px solid var(--border-color);">
+            ♻️ Réinitialiser par défaut
+        </button>
+        <button type="button" class="btn-secondary" id="previewEcommerce" style="background: var(--primary-color); color: white; border: none;">
+            👁️ Prévisualiser sur la boutique
+        </button>
+    </div>
+</section>
+        </main>
+    </div>
+    
+ <script type="module">
+    // ==================== PARTIE 1/4 : CONFIGURATION & BASE ====================
+
+const SUPABASE_URL = 'https://xjckbqbqxcwzcrlmuvzf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2ticWJxeGN3emNybG11dnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MTk1MzMsImV4cCI6MjA3NjA5NTUzM30.AMzAUwtjFt7Rvof5r2enMyYIYToc1wNWWEjvZqK_YXM';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let parametres = {
+    general: { nom: '', description: '', email: '', telephone: '', adresse: '' },
+    identifiant: { slug: '', disponible: false },
+    paiement: {
+        carte: { actif: false, cle: '', confirme: false },
+        mobile: {
+            actif: false,
+            confirme: false,
+            mtn: { actif: false, nomCompte: '', numero: '', confirme: false },
+            orange: { actif: false, nomCompte: '', numero: '', confirme: false }
+        },
+        cash: { actif: false, confirme: false },
+        devise: 'FCFA'
+    },
+    livraison: {
+        fraisDouala: 1000,
+        fraisAutres: 2500,
+        delai: '2-5 jours ouvrables',
+        gratuit: false,
+        montantMin: 50000,
+        zonesPersonnalisees: []
+    },
+    apparence: {
+        couleurPrimaire: '#FF6B00',
+        couleurSecondaire: '#1A1A1A',
+        logo: '',
+        favicon: '',
+        police: 'Inter'
+    },
+    notifications: { commandes: true, stock: true, clients: false, rapports: true }
+};
+
+async function verifierAuthentification() {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!session) {
+            window.location.href = 'index.html';
+            return;
+        }
+        currentUser = session.user;
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) userNameElement.textContent = currentUser.email.split('@')[0];
+    } catch (error) {
+        console.error('Erreur auth:', error);
+        window.location.href = 'index.html';
+    }
+}
+
+async function chargerParametres() {
+    try {
+        const { data, error } = await supabase
+            .from('parametres_boutique')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (data) {
+            parametres = { ...parametres, ...data.config };
+        } else {
+            const localParams = localStorage.getItem(`parametres_${currentUser.id}`);
+            if (localParams) parametres = JSON.parse(localParams);
+        }
+        
+        await initialiserIdentifiantUnique();
+        appliquerParametres();
+    } catch (error) {
+        await initialiserIdentifiantUnique();
+        appliquerParametres();
+    }
+}
+
+async function sauvegarderParametres() {
+    try {
+        const { error } = await supabase
+            .from('parametres_boutique')
+            .upsert({
+                user_id: currentUser.id,
+                config: parametres,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' });
+
+        if (error) throw error;
+        localStorage.setItem(`parametres_${currentUser.id}`, JSON.stringify(parametres));
+        return true;
+    } catch (error) {
+        localStorage.setItem(`parametres_${currentUser.id}`, JSON.stringify(parametres));
+        return false;
+    }
+}
+
+function genererIdentifiantAuto() {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 6);
+    return `oda-${timestamp}-${random}`;
+}
+
+async function initialiserIdentifiantUnique() {
+    if (!parametres.identifiant || !parametres.identifiant.slug) {
+        const identifiantAuto = genererIdentifiantAuto();
+        parametres.identifiant = {
+            slug: identifiantAuto,
+            disponible: true,
+            auto: true,
+            dateCreation: new Date().toISOString()
+        };
+        parametres.slug = identifiantAuto;
+        await sauvegarderParametres();
+        
+        if (currentUser?.id) {
+            localStorage.setItem(`boutique_cache_${identifiantAuto}`, JSON.stringify({
+                config: parametres,
+                user_id: currentUser.id,
+                timestamp: Date.now()
+            }));
+        }
+        afficherNotification('🔖 Identifiant unique généré automatiquement', 'success');
+    }
+    afficherIdentifiantActuel();
+}
+
+function afficherIdentifiantActuel() {
+    const identifiantActuel = document.getElementById('identifiantActuel');
+    const identifiantActif = document.getElementById('identifiantActif');
+    const lienBoutique = document.getElementById('lienBoutique');
+    const formulaire = document.getElementById('identifiantForm');
+    
+    if (parametres.identifiant && parametres.identifiant.slug) {
+        if (identifiantActuel) identifiantActuel.style.display = 'block';
+        if (identifiantActif) identifiantActif.textContent = parametres.identifiant.slug;
+        if (lienBoutique) {
+            lienBoutique.value = `${window.location.origin}oda-navy.vercel.app/boutique.html?shop=${parametres.identifiant.slug}`;
+        }
+        if (formulaire) formulaire.style.display = 'none';
+    }
+}
+
+async function verifierDisponibiliteSlug(slug) {
+    try {
+        if (parametres.identifiant.slug === slug) {
+            const availability = document.getElementById('slugAvailability');
+            if (availability) {
+                availability.className = 'slug-status available';
+                availability.textContent = '✓ C\'est votre identifiant actuel';
+            }
+            return true;
+        }
+
+        const { data } = await supabase
+            .from('parametres_boutique')
+            .select('user_id')
+            .eq('config->identifiant->>slug', slug)
+            .neq('user_id', currentUser.id)
+            .single();
+
+        const disponible = !data;
+        const availability = document.getElementById('slugAvailability');
+        
+        if (availability) {
+            if (disponible) {
+                availability.className = 'slug-status available';
+                availability.textContent = '✓ Identifiant disponible';
+            } else {
+                availability.className = 'slug-status unavailable';
+                availability.textContent = '✗ Identifiant déjà utilisé';
+            }
+        }
+        return disponible;
+    } catch (error) {
+        return false;
+    }
+}
+
+function afficherNotification(message, type = 'info') {
+    let conteneur = document.getElementById('notification-container');
+    if (!conteneur) {
+        conteneur = document.createElement('div');
+        conteneur.id = 'notification-container';
+        conteneur.style.cssText = 'position:fixed;top:100px;right:20px;z-index:10000;display:flex;flex-direction:column;gap:12px';
+        document.body.appendChild(conteneur);
+    }
+
+    const couleurs = { success: '#34C759', error: '#FF3B30', info: '#007AFF', warning: '#FF9500' };
+    const notification = document.createElement('div');
+    notification.style.cssText = `background:white;padding:16px 24px;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.15);border-left:4px solid ${couleurs[type]};animation:slideIn 0.5s ease;max-width:350px;font-family:'Poppins',sans-serif;font-weight:500;color:#1D1D1F`;
+    notification.textContent = message;
+    conteneur.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
+    }, 3000);
+}
+
+window.afficherFormulaireModification = function() {
+    const formulaire = document.getElementById('identifiantForm');
+    const shopSlug = document.getElementById('shopSlug');
+    if (formulaire) formulaire.style.display = 'block';
+    if (parametres.identifiant?.slug && !parametres.identifiant.auto && shopSlug) {
+        shopSlug.value = parametres.identifiant.slug;
+    }
+    if (formulaire) formulaire.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+window.copierLienBoutique = function() {
+    const lienBoutiqueInput = document.getElementById('lienBoutique');
+    if (lienBoutiqueInput) {
+        lienBoutiqueInput.select();
+        document.execCommand('copy');
+        afficherNotification('✅ Lien copié dans le presse-papiers !', 'success');
+        lienBoutiqueInput.style.background = 'rgba(52, 199, 89, 0.1)';
+        setTimeout(() => { lienBoutiqueInput.style.background = 'white'; }, 500);
+    }
+};
+
+// ==================== PARTIE 2/4 : NAVIGATION & MENUS ====================
+
+function initialiserMenuHamburger() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const hamburgerOverlay = document.getElementById('hamburgerOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+    
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', () => {
+            const isOpening = !hamburgerMenu?.classList.contains('active');
+            hamburgerBtn.classList.toggle('active');
+            hamburgerMenu?.classList.toggle('active');
+            hamburgerOverlay?.classList.toggle('active');
+            document.body.style.overflow = isOpening ? 'hidden' : '';
+        });
+    }
+    
+    const fermerMenu = () => {
+        hamburgerBtn?.classList.remove('active');
+        hamburgerMenu?.classList.remove('active');
+        hamburgerOverlay?.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+    
+    if (closeMenu) closeMenu.addEventListener('click', fermerMenu);
+    if (hamburgerOverlay) hamburgerOverlay.addEventListener('click', fermerMenu);
+    
+    document.querySelectorAll('.hamburger-link').forEach(link => {
+        link.addEventListener('click', () => setTimeout(fermerMenu, 300));
+    });
+}
+
+function creerMenuMobileAndroid() {
+    if (window.innerWidth > 768) return;
+
+    const menuExistant = document.getElementById('menu-mobile-android');
+    if (menuExistant) menuExistant.remove();
+
+    const menuMobile = document.createElement('div');
+    menuMobile.id = 'menu-mobile-android';
+
+    const menuItems = [
+        { icon: '🏪', label: 'Général', section: 'general' },
+        { icon: '🔖', label: 'Identifiant', section: 'identifiant' },
+        { icon: '💳', label: 'Paiement', section: 'payment' },
+        { icon: '📦', label: 'Livraison', section: 'shipping' },
+        { icon: '🔔', label: 'Notifications', section: 'notifications' },
+        { icon: '🔒', label: 'Sécurité', section: 'security' },
+        { icon: '🎨', label: 'Apparence', section: 'apparence' }
+    ];
+
+    menuItems.forEach(item => {
+        const bouton = document.createElement('button');
+        bouton.className = 'menu-mobile-btn';
+        bouton.dataset.section = item.section;
+        
+        const sectionElement = document.getElementById(item.section);
+        const isActive = sectionElement && sectionElement.style.display !== 'none';
+        if (isActive) bouton.classList.add('active');
+
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'link-icon';
+        iconSpan.textContent = item.icon;
+
+        const labelSpan = document.createElement('span');
+        labelSpan.textContent = item.label;
+
+        bouton.appendChild(iconSpan);
+        bouton.appendChild(labelSpan);
+
+        if (isActive) {
+            const indicator = document.createElement('div');
+            indicator.className = 'active-indicator';
+            bouton.appendChild(indicator);
+        }
+
+        bouton.addEventListener('click', () => {
+            naviguerVersSection(item.section);
+            mettreAJourMenuActif(bouton);
+        });
+
+        menuMobile.appendChild(bouton);
+    });
+
+    document.body.appendChild(menuMobile);
+    document.body.style.paddingBottom = '85px';
+}
+
+function naviguerVersSection(sectionId) {
+    document.querySelectorAll('.settings-section').forEach(s => s.style.display = 'none');
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.querySelectorAll('.settings-menu-link').forEach(link => {
+            link.classList.toggle('active', link.getAttribute('data-section') === sectionId);
+        });
+    }
+}
+
+function mettreAJourMenuActif(boutonActif) {
+    document.querySelectorAll('.menu-mobile-btn').forEach(btn => {
+        btn.classList.remove('active');
+        const indicator = btn.querySelector('.active-indicator');
+        if (indicator) indicator.remove();
+    });
+
+    boutonActif.classList.add('active');
+    const indicator = document.createElement('div');
+    indicator.className = 'active-indicator';
+    boutonActif.appendChild(indicator);
+
+    const icon = boutonActif.querySelector('.link-icon');
+    if (icon) {
+        icon.style.transform = 'scale(1.2)';
+        setTimeout(() => { icon.style.transform = 'scale(1)'; }, 200);
+    }
+
+    boutonActif.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+function initialiserMenuMobileAndroid() {
+    if (window.innerWidth <= 768) creerMenuMobileAndroid();
+    window.addEventListener('resize', () => {
+        const menuMobile = document.getElementById('menu-mobile-android');
+        if (window.innerWidth > 768) {
+            if (menuMobile) {
+                menuMobile.style.display = 'none';
+                document.body.style.paddingBottom = '0';
+            }
+        } else {
+            if (menuMobile) {
+                menuMobile.style.display = 'flex';
+                document.body.style.paddingBottom = '90px';
+            } else {
+                creerMenuMobileAndroid();
+            }
+        }
+    });
+
+    document.querySelectorAll('.settings-menu-link').forEach(link => {
+        link.addEventListener('click', () => {
+            const section = link.getAttribute('data-section');
+            if (section) {
+                const boutonMobile = document.querySelector(`.menu-mobile-btn[data-section="${section}"]`);
+                if (boutonMobile) mettreAJourMenuActif(boutonMobile);
+            }
+        });
+    });
+}
+
+function initialiserNavigation() {
+    document.querySelectorAll('.settings-menu-link').forEach(lien => {
+        lien.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.settings-menu-link').forEach(l => l.classList.remove('active'));
+            lien.classList.add('active');
+            document.querySelectorAll('.settings-section').forEach(s => s.style.display = 'none');
+            const sectionId = lien.getAttribute('data-section');
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.style.display = 'block';
+                if (window.innerWidth <= 768) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        });
+    });
+}
+
+function appliquerParametres() {
+    if (parametres.general) {
+        ['shopName', 'shopDescription', 'shopEmail', 'shopPhone', 'shopAddress'].forEach((id, i) => {
+            const el = document.getElementById(id);
+            const keys = ['nom', 'description', 'email', 'telephone', 'adresse'];
+            if (el) el.value = parametres.general[keys[i]] || '';
+        });
+    }
+
+    if (parametres.identifiant) {
+        const slugInput = document.getElementById('shopSlug');
+        const slugPreview = document.getElementById('slugPreview');
+        if (slugInput) slugInput.value = parametres.identifiant.slug || '';
+        if (slugPreview) slugPreview.textContent = parametres.identifiant.slug || 'votre-identifiant';
+    }
+
+    if (parametres.paiement) {
+        const paymentCard = document.getElementById('paymentCard');
+        const paymentMobile = document.getElementById('paymentMobile');
+        const paymentCash = document.getElementById('paymentCash');
+        const currency = document.getElementById('currency');
+        
+        if (paymentCard) paymentCard.checked = parametres.paiement.carte.actif;
+        if (paymentMobile) paymentMobile.checked = parametres.paiement.mobile.actif;
+        if (paymentCash) paymentCash.checked = parametres.paiement.cash.actif;
+        if (currency) currency.value = parametres.paiement.devise;
+        
+        if (paymentCard?.checked) {
+            const cardDetails = document.getElementById('cardDetails');
+            if (cardDetails) cardDetails.style.display = 'block';
+        }
+        if (paymentMobile?.checked) {
+            const mobileDetails = document.getElementById('mobileDetails');
+            if (mobileDetails) mobileDetails.style.display = 'block';
+        }
+        if (paymentCash?.checked) {
+            const cashDetails = document.getElementById('cashDetails');
+            if (cashDetails) cashDetails.style.display = 'block';
+        }
+    }
+
+    if (parametres.livraison) {
+        const fraisDouala = document.getElementById('fraisDouala');
+        const fraisAutres = document.getElementById('fraisAutres');
+        const delaiLivraison = document.getElementById('delaiLivraison');
+        const freeShipping = document.getElementById('freeShipping');
+        const montantMinimum = document.getElementById('montantMinimum');
+        
+        if (fraisDouala) fraisDouala.value = parametres.livraison.fraisDouala;
+        if (fraisAutres) fraisAutres.value = parametres.livraison.fraisAutres;
+        if (delaiLivraison) delaiLivraison.value = parametres.livraison.delai;
+        if (freeShipping) freeShipping.checked = parametres.livraison.gratuit;
+        if (montantMinimum) montantMinimum.value = parametres.livraison.montantMin;
+    }
+
+    if (parametres.notifications) {
+        ['notifOrders', 'notifStock', 'notifClients', 'notifReports'].forEach((id, i) => {
+            const el = document.getElementById(id);
+            const keys = ['commandes', 'stock', 'clients', 'rapports'];
+            if (el) el.checked = parametres.notifications[keys[i]];
+        });
+    }
+}
+// ==================== PARTIE 3/4 : FORMULAIRES & PAIEMENT ====================
+
+function initialiserFormulaires() {
+    const formGeneral = document.getElementById('generalForm');
+    if (formGeneral) {
+        formGeneral.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            parametres.general = {
+                nom: document.getElementById('shopName')?.value || '',
+                description: document.getElementById('shopDescription')?.value || '',
+                email: document.getElementById('shopEmail')?.value || '',
+                telephone: document.getElementById('shopPhone')?.value || '',
+                adresse: document.getElementById('shopAddress')?.value || ''
+            };
+            const success = await sauvegarderParametres();
+            afficherNotification(success ? '✅ Paramètres généraux enregistrés' : '⚠️ Sauvegardé localement', success ? 'success' : 'warning');
+        });
+    }
+
+    const formLivraison = document.getElementById('shippingForm');
+    if (formLivraison) {
+        formLivraison.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            sauvegarderZonesLivraison();
+            parametres.livraison = {
+                fraisDouala: parseInt(document.getElementById('fraisDouala')?.value) || 0,
+                fraisAutres: parseInt(document.getElementById('fraisAutres')?.value) || 0,
+                delai: document.getElementById('delaiLivraison')?.value || '',
+                livraisonGratuite: document.getElementById('freeShipping')?.checked || false,
+                montantMinimum: parseInt(document.getElementById('montantMinimum')?.value) || 0,
+                zonesPersonnalisees: parametres.livraison.zonesPersonnalisees || []
+            };
+            const success = await sauvegarderParametres();
+            afficherNotification(success ? '📦 Options de livraison sauvegardées' : '⚠️ Sauvegardé localement', success ? 'success' : 'warning');
+        });
+    }
+
+    const formSecurite = document.getElementById('securityForm');
+    if (formSecurite) {
+        formSecurite.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentPassword = document.getElementById('currentPassword')?.value;
+            const newPassword = document.getElementById('newPassword')?.value;
+            const confirmPassword = document.getElementById('confirmPassword')?.value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                afficherNotification('⚠️ Veuillez remplir tous les champs', 'warning');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                afficherNotification('❌ Les mots de passe ne correspondent pas', 'error');
+                return;
+            }
+            if (newPassword.length < 8) {
+                afficherNotification('⚠️ Le mot de passe doit contenir au moins 8 caractères', 'warning');
+                return;
+            }
+            
+            try {
+                const { error } = await supabase.auth.updateUser({ password: newPassword });
+                if (error) throw error;
+                formSecurite.reset();
+                afficherNotification('🔒 Mot de passe modifié avec succès', 'success');
+            } catch (error) {
+                afficherNotification('❌ Erreur lors du changement de mot de passe', 'error');
+            }
+        });
+    }
+
+    [
+        { id: 'notifOrders', key: 'commandes' },
+        { id: 'notifStock', key: 'stock' },
+        { id: 'notifClients', key: 'clients' },
+        { id: 'notifReports', key: 'rapports' }
+    ].forEach(({ id, key }) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', async () => {
+                parametres.notifications[key] = element.checked;
+                await sauvegarderParametres();
+                afficherNotification('🔔 Préférences de notifications mises à jour', 'info');
+            });
+        }
+    });
+
+    const currencySelect = document.getElementById('currency');
+    if (currencySelect) {
+        currencySelect.addEventListener('change', async () => {
+            parametres.paiement.devise = currencySelect.value;
+            await sauvegarderParametres();
+            afficherNotification('💱 Devise mise à jour', 'info');
+        });
+    }
+}
+
+function initialiserIdentifiant() {
+    const slugInput = document.getElementById('shopSlug');
+    const slugPreview = document.getElementById('slugPreview');
+    const urlBase = document.getElementById('urlBase');
+    let timeoutId;
+
+    if (urlBase) urlBase.textContent = `${window.location.origin}/e-commerce2.html`;
+
+    if (slugInput) {
+        slugInput.addEventListener('input', (e) => {
+            let value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/--+/g, '-').substring(0, 50);
+            e.target.value = value;
+            if (slugPreview) slugPreview.textContent = value || 'votre-identifiant';
+            clearTimeout(timeoutId);
+            if (value.length >= 3) {
+                timeoutId = setTimeout(() => verifierDisponibiliteSlug(value), 500);
+            } else {
+                const slugAvailability = document.getElementById('slugAvailability');
+                if (slugAvailability) slugAvailability.innerHTML = '';
+            }
+        });
+    }
+
+    const formIdentifiant = document.getElementById('identifiantForm');
+    if (formIdentifiant) {
+        formIdentifiant.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const slug = slugInput.value.trim();
+            
+            if (!slug) {
+                afficherNotification('⚠️ Veuillez entrer un identifiant', 'warning');
+                return;
+            }
+            if (slug.length < 3) {
+                afficherNotification('⚠️ L\'identifiant doit contenir au moins 3 caractères', 'warning');
+                return;
+            }
+            
+            const disponible = await verifierDisponibiliteSlug(slug);
+            if (!disponible && parametres.identifiant.slug !== slug) {
+                afficherNotification('❌ Cet identifiant est déjà utilisé', 'error');
+                return;
+            }
+            
+            parametres.identifiant = {
+                slug: slug,
+                disponible: true,
+                auto: false,
+                dateCreation: parametres.identifiant?.dateCreation || new Date().toISOString(),
+                dateModification: new Date().toISOString()
+            };
+            parametres.slug = slug;
+            
+            const success = await sauvegarderParametres();
+            if (success) {
+                afficherNotification('🔖 Identifiant unique enregistré avec succès', 'success');
+                afficherIdentifiantActuel();
+                if (currentUser?.id) {
+                    localStorage.setItem(`boutique_cache_${slug}`, JSON.stringify({
+                        config: parametres,
+                        user_id: currentUser.id,
+                        timestamp: Date.now()
+                    }));
+                }
+            } else {
+                afficherNotification('⚠️ Sauvegardé localement uniquement', 'warning');
+            }
+        });
+    }
+}
+
+function initialiserPaiement() {
+    const paymentCard = document.getElementById('paymentCard');
+    if (paymentCard) {
+        paymentCard.addEventListener('change', async () => {
+            const details = document.getElementById('cardDetails');
+            if (details) details.style.display = paymentCard.checked ? 'block' : 'none';
+            parametres.paiement.carte.actif = paymentCard.checked;
+            await sauvegarderParametres();
+        });
+        if (paymentCard.checked) {
+            const details = document.getElementById('cardDetails');
+            if (details) details.style.display = 'block';
+        }
+    }
+
+    const paymentMobile = document.getElementById('paymentMobile');
+    if (paymentMobile) {
+        paymentMobile.addEventListener('change', async () => {
+            const details = document.getElementById('mobileDetails');
+            if (details) details.style.display = paymentMobile.checked ? 'block' : 'none';
+            parametres.paiement.mobile.actif = paymentMobile.checked;
+            await sauvegarderParametres();
+        });
+        if (paymentMobile.checked) {
+            const details = document.getElementById('mobileDetails');
+            if (details) details.style.display = 'block';
+        }
+    }
+
+    const paymentCash = document.getElementById('paymentCash');
+    if (paymentCash) {
+        paymentCash.addEventListener('change', async () => {
+            const details = document.getElementById('cashDetails');
+            if (details) details.style.display = paymentCash.checked ? 'block' : 'none';
+            parametres.paiement.cash.actif = paymentCash.checked;
+            await sauvegarderParametres();
+        });
+        if (paymentCash.checked) {
+            const details = document.getElementById('cashDetails');
+            if (details) details.style.display = 'block';
+        }
+    }
+}
+
+window.confirmerPaiement = async function(type) {
+    if (type === 'card') {
+        const cle = document.getElementById('stripeKey')?.value;
+        if (!cle) {
+            afficherNotification('⚠️ Veuillez entrer votre clé API Stripe', 'warning');
+            return;
+        }
+        parametres.paiement.carte.cle = cle;
+        parametres.paiement.carte.confirme = true;
+    } else if (type === 'cash') {
+        parametres.paiement.cash.confirme = true;
+    }
+    const success = await sauvegarderParametres();
+    afficherNotification(success ? `✅ ${type === 'card' ? 'Carte bancaire' : 'Paiement à la livraison'} configuré` : '⚠️ Sauvegardé localement', success ? 'success' : 'warning');
+};
+
+function initialiserZonesLivraison() {
+    const btnAjouterZone = document.getElementById('ajouterZone');
+    if (btnAjouterZone) {
+        btnAjouterZone.addEventListener('click', () => ajouterZoneLivraison());
+    }
+    if (parametres.livraison.zonesPersonnalisees?.length > 0) {
+        parametres.livraison.zonesPersonnalisees.forEach(zone => ajouterZoneLivraison(zone));
+        const emptyMessage = document.getElementById('emptyZonesMessage');
+        if (emptyMessage) emptyMessage.style.display = 'none';
+    }
+}
+
+function ajouterZoneLivraison(zoneExistante = null) {
+    const zonesContainer = document.getElementById('zonesContainer');
+    if (!zonesContainer) return;
+
+    const zoneId = Date.now();
+    const zoneCard = document.createElement('div');
+    zoneCard.className = 'zone-card';
+    zoneCard.dataset.zoneId = zoneId;
+    zoneCard.style.cssText = 'background:var(--bg-primary);padding:16px;border-radius:12px;margin-bottom:12px;opacity:0;transform:translateY(10px);transition:all 0.3s ease';
+
+    zoneCard.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span style="font-weight:600">📍 Zone ${zonesContainer.children.length + 1}</span>
+            <button type="button" onclick="supprimerZone(${zoneId})" style="padding:6px 12px;background:var(--danger-color);color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.85rem">🗑️ Supprimer</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><label style="font-size:0.85rem">Nom du lieu</label><input type="text" class="form-input zone-nom" placeholder="Ex: Yaoundé" value="${zoneExistante?.nom || ''}" style="font-size:0.9rem"></div>
+            <div><label style="font-size:0.85rem">Frais (FCFA)</label><input type="number" class="form-input zone-frais" placeholder="0" value="${zoneExistante?.frais || ''}" min="0" style="font-size:0.9rem"></div>
+        </div>
+    `;
+
+    zonesContainer.appendChild(zoneCard);
+    const emptyMessage = document.getElementById('emptyZonesMessage');
+    if (emptyMessage) emptyMessage.style.display = 'none';
+
+    setTimeout(() => {
+        zoneCard.style.opacity = '1';
+        zoneCard.style.transform = 'translateY(0)';
+    }, 10);
+
+    zoneCard.querySelectorAll('input').forEach(input => {
+        input.addEventListener('change', sauvegarderZonesLivraison);
+    });
+}
+
+window.supprimerZone = function(zoneId) {
+    if (!confirm('Voulez-vous vraiment supprimer cette zone de livraison ?')) return;
+    const zoneCard = document.querySelector(`[data-zone-id="${zoneId}"]`);
+    if (zoneCard) {
+        zoneCard.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => {
+            zoneCard.remove();
+            sauvegarderZonesLivraison();
+            const zonesContainer = document.getElementById('zonesContainer');
+            const emptyMessage = document.getElementById('emptyZonesMessage');
+            if (zonesContainer?.children.length === 0 && emptyMessage) {
+                emptyMessage.style.display = 'block';
+            }
+        }, 300);
+    }
+};
+
+function sauvegarderZonesLivraison() {
+    const zones = [];
+    document.querySelectorAll('.zone-card').forEach(card => {
+        const nom = card.querySelector('.zone-nom').value.trim();
+        const frais = parseInt(card.querySelector('.zone-frais').value) || 0;
+        if (nom) zones.push({ nom, frais });
+    });
+    parametres.livraison.zonesPersonnalisees = zones;
+}
+// ==================== PARTIE 4/4 : MOBILE MONEY & INITIALISATION ====================
+
+function initialiserMobileMoney() {
+    const paymentMobile = document.getElementById('paymentMobile');
+    const mobileDetails = document.getElementById('mobileDetails');
+    
+    if (paymentMobile) {
+        paymentMobile.addEventListener('change', async () => {
+            if (mobileDetails) mobileDetails.style.display = paymentMobile.checked ? 'block' : 'none';
+            parametres.paiement.mobile.actif = paymentMobile.checked;
+            await sauvegarderParametres();
+        });
+        if (paymentMobile.checked && mobileDetails) mobileDetails.style.display = 'block';
+    }
+    
+    const mtnActive = document.getElementById('mtnActive');
+    const mtnInputs = document.getElementById('mtnInputs');
+    if (mtnActive) {
+        mtnActive.addEventListener('change', async () => {
+            if (mtnInputs) mtnInputs.style.display = mtnActive.checked ? 'block' : 'none';
+            parametres.paiement.mobile.mtn.actif = mtnActive.checked;
+            await sauvegarderParametres();
+            afficherNotification(mtnActive.checked ? '✅ MTN Money activé' : '❌ MTN Money désactivé', 'info');
+        });
+        
+        if (parametres.paiement.mobile.mtn) {
+            mtnActive.checked = parametres.paiement.mobile.mtn.actif || false;
+            if (mtnActive.checked && mtnInputs) mtnInputs.style.display = 'block';
+            const mtnNom = document.getElementById('mtnNomCompte');
+            const mtnNum = document.getElementById('mtnNumero');
+            if (mtnNom) mtnNom.value = parametres.paiement.mobile.mtn.nomCompte || '';
+            if (mtnNum) mtnNum.value = parametres.paiement.mobile.mtn.numero || '';
+        }
+    }
+    
+    const orangeActive = document.getElementById('orangeActive');
+    const orangeInputs = document.getElementById('orangeInputs');
+    if (orangeActive) {
+        orangeActive.addEventListener('change', async () => {
+            if (orangeInputs) orangeInputs.style.display = orangeActive.checked ? 'block' : 'none';
+            parametres.paiement.mobile.orange.actif = orangeActive.checked;
+            await sauvegarderParametres();
+            afficherNotification(orangeActive.checked ? '✅ Orange Money activé' : '❌ Orange Money désactivé', 'info');
+        });
+        
+        if (parametres.paiement.mobile.orange) {
+            orangeActive.checked = parametres.paiement.mobile.orange.actif || false;
+            if (orangeActive.checked && orangeInputs) orangeInputs.style.display = 'block';
+            const orangeNom = document.getElementById('orangeNomCompte');
+            const orangeNum = document.getElementById('orangeNumero');
+            if (orangeNom) orangeNom.value = parametres.paiement.mobile.orange.nomCompte || '';
+            if (orangeNum) orangeNum.value = parametres.paiement.mobile.orange.numero || '';
+        }
+    }
+    
+    const btnConfirmer = document.getElementById('confirmerMobileMoney');
+    if (btnConfirmer) {
+        btnConfirmer.addEventListener('click', async () => {
+            const mtnActive = document.getElementById('mtnActive')?.checked;
+            const orangeActive = document.getElementById('orangeActive')?.checked;
+            
+            if (!mtnActive && !orangeActive) {
+                afficherNotification('⚠️ Veuillez activer au moins MTN Money ou Orange Money', 'warning');
+                return;
+            }
+            
+            let erreurs = [];
+            if (mtnActive) {
+                const mtnNom = document.getElementById('mtnNomCompte')?.value.trim();
+                const mtnNum = document.getElementById('mtnNumero')?.value.replace(/\s/g, '');
+                if (!mtnNom) erreurs.push('Nom du compte MTN Money manquant');
+                if (!mtnNum) erreurs.push('Numéro MTN Money manquant');
+                else if (!mtnNum.match(/^\+237[67]\d{8}$/)) erreurs.push('Format de numéro MTN Money invalide');
+                
+                if (erreurs.length === 0) {
+                    parametres.paiement.mobile.mtn = {
+                        actif: true,
+                        nomCompte: mtnNom,
+                        numero: mtnNum,
+                        confirme: true
+                    };
+                }
+            }
+            
+            if (orangeActive) {
+                const orangeNom = document.getElementById('orangeNomCompte')?.value.trim();
+                const orangeNum = document.getElementById('orangeNumero')?.value.replace(/\s/g, '');
+                if (!orangeNom) erreurs.push('Nom du compte Orange Money manquant');
+                if (!orangeNum) erreurs.push('Numéro Orange Money manquant');
+                else if (!orangeNum.match(/^\+237[67]\d{8}$/)) erreurs.push('Format de numéro Orange Money invalide');
+                
+                if (erreurs.length === 0 || (erreurs.length === 2 && mtnActive)) {
+                    parametres.paiement.mobile.orange = {
+                        actif: true,
+                        nomCompte: orangeNom,
+                        numero: orangeNum,
+                        confirme: true
+                    };
+                }
+            }
+            
+            if (erreurs.length > 0) {
+                erreurs.forEach(erreur => afficherNotification(`❌ ${erreur}`, 'error'));
+                return;
+            }
+            
+            parametres.paiement.mobile.confirme = true;
+            const success = await sauvegarderParametres();
+            afficherNotification(success ? '✅ Mobile Money configuré avec succès !' : '⚠️ Sauvegardé localement uniquement', success ? 'success' : 'warning');
+        });
+    }
+}
+
+function initialiserApparence() {
+    const primaryColorInput = document.getElementById('primaryColor');
+    const primaryColorHex = document.getElementById('primaryColorHex');
+    const primaryPreview = document.getElementById('primaryColorPreview');
+    
+    if (primaryColorInput) {
+        primaryColorInput.addEventListener('input', (e) => {
+            const color = e.target.value;
+            parametres.apparence.couleurPrimaire = color;
+            if (primaryPreview) primaryPreview.style.background = color;
+            if (primaryColorHex) primaryColorHex.value = color.toUpperCase();
+        });
+    }
+
+    const secondaryColorInput = document.getElementById('secondaryColor');
+    const secondaryColorHex = document.getElementById('secondaryColorHex');
+    const secondaryPreview = document.getElementById('secondaryColorPreview');
+    
+    if (secondaryColorInput) {
+        secondaryColorInput.addEventListener('input', (e) => {
+            const color = e.target.value;
+            parametres.apparence.couleurSecondaire = color;
+            if (secondaryPreview) secondaryPreview.style.background = color;
+            if (secondaryColorHex) secondaryColorHex.value = color.toUpperCase();
+        });
+    }
+
+    const saveAppearanceBtn = document.getElementById('saveAppearance');
+    if (saveAppearanceBtn) {
+        saveAppearanceBtn.addEventListener('click', async () => {
+            const success = await sauvegarderParametres();
+            afficherNotification(success ? '✅ Apparence sauvegardée avec succès' : '⚠️ Sauvegardé localement uniquement', success ? 'success' : 'warning');
+        });
+    }
+
+    const resetAppearanceBtn = document.getElementById('resetAppearance');
+    if (resetAppearanceBtn) {
+        resetAppearanceBtn.addEventListener('click', async () => {
+            if (!confirm('Voulez-vous vraiment réinitialiser l\'apparence par défaut ?')) return;
+            parametres.apparence = { couleurPrimaire: '#FF6B00', couleurSecondaire: '#1A1A1A', logo: '', favicon: '', police: 'Inter' };
+            appliquerParametres();
+            await sauvegarderParametres();
+            afficherNotification('✅ Apparence réinitialisée', 'success');
+        });
+    }
+}
+
+window.appliquerPalette = function(couleurPrimaire, couleurSecondaire) {
+    const primaryColor = document.getElementById('primaryColor');
+    const primaryColorHex = document.getElementById('primaryColorHex');
+    const primaryPreview = document.getElementById('primaryColorPreview');
+    const secondaryColor = document.getElementById('secondaryColor');
+    const secondaryColorHex = document.getElementById('secondaryColorHex');
+    const secondaryPreview = document.getElementById('secondaryColorPreview');
+    
+    if (primaryColor) {
+        primaryColor.value = couleurPrimaire;
+        parametres.apparence.couleurPrimaire = couleurPrimaire;
+        if (primaryColorHex) primaryColorHex.value = couleurPrimaire.toUpperCase();
+        if (primaryPreview) primaryPreview.style.background = couleurPrimaire;
+    }
+    if (secondaryColor) {
+        secondaryColor.value = couleurSecondaire;
+        parametres.apparence.couleurSecondaire = couleurSecondaire;
+        if (secondaryColorHex) secondaryColorHex.value = couleurSecondaire.toUpperCase();
+        if (secondaryPreview) secondaryPreview.style.background = couleurSecondaire;
+    }
+    afficherNotification('🎨 Palette appliquée !', 'success');
+};
+async function traiterImageUpload(file, type) {
+    // Vérifier la taille du fichier (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        afficherNotification('❌ Le fichier est trop volumineux (max 2MB)', 'error');
+        return;
+    }
+
+    // Vérifier le type de fichier
+    if (!file.type.startsWith('image/')) {
+        afficherNotification('❌ Le fichier doit être une image', 'error');
+        return;
+    }
+
+    try {
+        // Convertir en base64
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const base64 = e.target.result;
+            
+            if (type === 'logo') {
+                parametres.apparence.logo = base64;
+                const logoPreview = document.getElementById('logoPreview');
+                if (logoPreview) {
+                    logoPreview.innerHTML = `<img src="${base64}" alt="Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;">`;
+                }
+                afficherNotification('✅ Logo chargé', 'success');
+            } else if (type === 'favicon') {
+                parametres.apparence.favicon = base64;
+                const faviconPreview = document.getElementById('faviconPreview');
+                if (faviconPreview) {
+                    faviconPreview.innerHTML = `<img src="${base64}" alt="Favicon" style="width: 32px; height: 32px; object-fit: contain;">`;
+                }
+                // Mettre à jour le favicon dans le document
+                let link = document.querySelector("link[rel*='icon']");
+                if (!link) {
+                    link = document.createElement('link');
+                    link.rel = 'icon';
+                    document.head.appendChild(link);
+                }
+                link.href = base64;
+                afficherNotification('✅ Favicon chargé', 'success');
+            }
+            
+            await sauvegarderParametres();
+        };
+        
+        reader.readAsDataURL(file);
+    } catch (error) {
+        console.error('Erreur upload image:', error);
+        afficherNotification('❌ Erreur lors du chargement de l\'image', 'error');
+    }
+}
+
+function appliquerCouleurAuSite(couleur, type) {
+    const root = document.documentElement;
+    
+    if (type === 'primary') {
+        root.style.setProperty('--primary-color', couleur);
+        
+        // Appliquer aux boutons d'aperçu
+        const previewBtnPrimary = document.querySelector('.preview-btn-primary');
+        if (previewBtnPrimary) {
+            previewBtnPrimary.style.background = couleur;
+        }
+        
+        const previewBtnSecondary = document.querySelector('.preview-btn-secondary');
+        if (previewBtnSecondary) {
+            previewBtnSecondary.style.color = couleur;
+            previewBtnSecondary.style.borderColor = couleur;
+        }
+        
+        const previewCard = document.querySelector('.preview-card h3');
+        if (previewCard) {
+            previewCard.style.color = couleur;
+        }
+        
+        const previewPrice = document.querySelector('.preview-card span');
+        if (previewPrice) {
+            previewPrice.style.color = couleur;
+        }
+        
+        const previewButton = document.querySelector('.preview-card button');
+        if (previewButton) {
+            previewButton.style.background = couleur;
+        }
+    } else if (type === 'secondary') {
+        root.style.setProperty('--secondary-color', couleur);
+    }
+}
+
+function appliquerPoliceAuSite(police) {
+    document.body.style.fontFamily = `'${police}', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+    
+    // Charger la police depuis Google Fonts si nécessaire
+    const polices = ['Inter', 'Poppins', 'Roboto', 'Montserrat', 'Open Sans', 'Lato', 'Raleway', 'Playfair Display'];
+    if (polices.includes(police)) {
+        const linkId = 'google-font-' + police.replace(/\s/g, '-');
+        let link = document.getElementById(linkId);
+        
+        if (!link) {
+            link = document.createElement('link');
+            link.id = linkId;
+            link.rel = 'stylesheet';
+            link.href = `https://fonts.googleapis.com/css2?family=${police.replace(/\s/g, '+')}:wght@300;400;500;600;700&display=swap`;
+            document.head.appendChild(link);
+        }
+    }
+}
+    // Upload du logo
+    const logoInput = document.getElementById('logoUpload');
+    if (logoInput) {
+        logoInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                await traiterImageUpload(file, 'logo');
+            }
+        });
+    }
+
+    // Upload du favicon
+    const faviconInput = document.getElementById('faviconUpload');
+    if (faviconInput) {
+        faviconInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                await traiterImageUpload(file, 'favicon');
+            }
+        });
+    }
+
+window.exporterDonnees = async function() {
+    if (!confirm('Voulez-vous exporter toutes vos données ?')) return;
+    try {
+        const { data: produits } = await supabase.from('produits').select('*').eq('user_id', currentUser.id);
+        const { data: commandes } = await supabase.from('commandes').select('*').eq('user_id', currentUser.id);
+        const donnees = { parametres, produits: produits || [], commandes: commandes || [], date: new Date().toISOString() };
+        const dataBlob = new Blob([JSON.stringify(donnees, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const lien = document.createElement('a');
+        lien.href = url;
+        lien.download = `export_boutique_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(lien);
+        lien.click();
+        document.body.removeChild(lien);
+        URL.revokeObjectURL(url);
+        afficherNotification('📥 Données exportées avec succès', 'success');
+    } catch (error) {
+        afficherNotification('❌ Erreur lors de l\'export', 'error');
+    }
+};
+
+window.supprimerCompte = async function() {
+    const confirmation = prompt('⚠️ ATTENTION ! Cette action est irréversible.\n\nTapez "SUPPRIMER" pour confirmer la suppression de votre compte :');
+    if (confirmation !== 'SUPPRIMER') {
+        afficherNotification('❌ Suppression annulée', 'info');
+        return;
+    }
+    try {
+        afficherNotification('⏳ Suppression en cours...', 'info');
+        await supabase.from('produits').delete().eq('user_id', currentUser.id);
+        await supabase.from('commandes').delete().eq('user_id', currentUser.id);
+        await supabase.from('parametres_boutique').delete().eq('user_id', currentUser.id);
+        localStorage.clear();
+        sessionStorage.clear();
+        afficherNotification('🗑️ Compte supprimé. Redirection...', 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+    } catch (error) {
+        afficherNotification('❌ Erreur lors de la suppression', 'error');
+    }
+};
+
+window.getShopSettings = function() {
+    return {
+        nom: parametres.general.nom,
+        description: parametres.general.description,
+        email: parametres.general.email,
+        telephone: parametres.general.telephone,
+        adresse: parametres.general.adresse,
+        slug: parametres.identifiant.slug,
+        couleurPrimaire: parametres.apparence.couleurPrimaire,
+        couleurSecondaire: parametres.apparence.couleurSecondaire,
+        logo: parametres.apparence.logo,
+        favicon: parametres.apparence.favicon,
+        police: parametres.apparence.police,
+        paiement: {
+            carte: parametres.paiement.carte.actif,
+            mobile: parametres.paiement.mobile.actif,
+            mtn: parametres.paiement.mobile.mtn,
+            orange: parametres.paiement.mobile.orange,
+            cash: parametres.paiement.cash.actif,
+            devise: parametres.paiement.devise
+        },
+        livraison: parametres.livraison
+    };
+};
+
+window.getZonesLivraison = function() {
+    const zones = [
+        { nom: 'Douala', frais: parametres.livraison?.fraisDouala || 1000 },
+        { nom: 'Autres villes', frais: parametres.livraison?.fraisAutres || 2500 }
+    ];
+    if (parametres.livraison?.zonesPersonnalisees) {
+        zones.push(...parametres.livraison.zonesPersonnalisees);
+    }
+    return zones;
+};
+
+// INITIALISATION PRINCIPALE
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('⚙️ Initialisation de la page Paramètres...');
+    
+    await verifierAuthentification();
+    initialiserMenuHamburger();
+    await chargerParametres();
+    initialiserNavigation();
+    initialiserFormulaires();
+    initialiserIdentifiant();
+    initialiserPaiement();
+    initialiserApparence();
+    initialiserZonesLivraison();
+    initialiserMobileMoney();
+    initialiserMenuMobileAndroid();
+    
+    const premiereSection = document.querySelector('.settings-section');
+    if (premiereSection) premiereSection.style.display = 'block';
+    
+    console.log('✅ Initialisation terminée');
+    console.log('%c⚙️ Paramètres - Ma Boutique Élégante', 'color: #007AFF; font-size: 20px; font-weight: bold;');
+    console.log('%c✅ Toutes les fonctionnalités chargées', 'color: #34C759; font-size: 14px; font-weight: 500;');
+});
+ </script>
+    
+</body>
+</html>

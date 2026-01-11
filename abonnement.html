@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abonnements - Ma Boutique Élégante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="oda.jpg">
+    <link rel="stylesheet" href="abonnement-v2.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<style>
+    :root {
+    --primary-color: #007AFF;
+    --primary-hover: #0056b3;
+    --secondary-color: #E8F4FF;
+    --accent-color: #34C759;
+    --bg-general: #F5F5F7;
+    --bg-card: #FFFFFF;
+    --text-primary: #1D1D1F;
+    --text-secondary: #86868B;
+    --border-color: #D2D2D7;
+    --success: #34C759;
+    --warning: #FF9500;
+    --error: #FF3B30;
+    --gradient-primary: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%);
+    --gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    --gradient-purple: linear-gradient(135deg, #9D50BB 0%, #6E48AA 100%);
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.16);
+    --shadow-glow: 0 8px 32px rgba(0, 122, 255, 0.2);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --transition-fast: 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #F5F7FA 0%, #E8EFF5 100%);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* ==================== HEADER ==================== */
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-light);
+    z-index: 1000;
+    animation: slideDown var(--transition-fast);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: white;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateX(-3px);
+}
+
+.brand-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-image {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.brand-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-btn {
+    position: relative;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.notification-btn .badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #FF3B30;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: var(--secondary-color);
+    cursor: pointer;
+}
+
+.avatar-image {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    border: 2px solid var(--primary-color);
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* ==================== CONTENEUR PRINCIPAL ==================== */
+.subscription-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 100px 24px 60px;
+}
+
+/* ==================== EN-TÊTE DE PAGE ==================== */
+.page-header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeIn 0.6s ease;
+}
+
+.header-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    animation: pulse 2s infinite;
+}
+
+.page-title {
+    font-size: 3rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+}
+
+.page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ==================== STATUT ACTUEL ==================== */
+.current-status {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    margin-bottom: 48px;
+    box-shadow: var(--shadow-medium);
+    animation: fadeIn 0.8s ease;
+}
+
+.status-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.status-icon {
+    font-size: 3rem;
+    width: 70px;
+    height: 70px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-info {
+    flex: 1;
+}
+
+.status-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.status-text {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+/* ==================== GRILLE DES PLANS ==================== */
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    margin-bottom: 60px;
+}
+
+.plan-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 32px 24px;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 1s ease;
+    animation-fill-mode: both;
+    border: 2px solid transparent;
+}
+
+.plan-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: transform var(--transition-fast);
+}
+
+.plan-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.plan-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* Plans spécifiques */
+.plan-free {
+    animation-delay: 0.1s;
+}
+
+.plan-starter {
+    animation-delay: 0.2s;
+    border-color: var(--primary-color);
+}
+
+.plan-business {
+    animation-delay: 0.3s;
+    border-color: var(--warning);
+    box-shadow: var(--shadow-glow);
+}
+
+.plan-premium {
+    animation-delay: 0.4s;
+    border-color: #9D50BB;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f3ff 100%);
+}
+
+/* Badge du plan */
+.plan-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.plan-free .plan-badge {
+    background: linear-gradient(135deg, #34C759 0%, #30B350 100%);
+    color: white;
+}
+
+.plan-starter .plan-badge {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.plan-business .plan-badge {
+    background: var(--gradient-gold);
+    color: white;
+}
+
+.plan-premium .plan-badge {
+    background: var(--gradient-purple);
+    color: white;
+}
+
+/* En-tête du plan */
+.plan-header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-top: 24px;
+}
+
+.plan-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.plan-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.price-amount {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.plan-premium .price-amount {
+    background: var(--gradient-purple);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.price-currency {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.plan-period {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* Fonctionnalités */
+.plan-features {
+    margin-bottom: 32px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.feature-item:last-child {
+    border-bottom: none;
+}
+
+.feature-icon {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--success);
+}
+
+.feature-disabled .feature-icon {
+    color: var(--text-secondary);
+}
+
+.feature-text {
+    flex: 1;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.feature-disabled .feature-text {
+    color: var(--text-secondary);
+}
+
+/* Boutons des plans */
+.plan-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    margin-bottom: 16px;
+}
+
+.btn-free {
+    background: var(--secondary-color);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+.btn-starter {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.btn-business {
+    background: var(--gradient-gold);
+    color: white;
+}
+
+.btn-premium {
+    background: var(--gradient-purple);
+    color: white;
+}
+
+.plan-btn:not(.btn-free):hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+/* Notes et highlights */
+.plan-note, .plan-highlight {
+    text-align: center;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+}
+
+.plan-note {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.plan-highlight {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* ==================== FAQ ==================== */
+.faq-section {
+    margin-top: 80px;
+    animation: fadeIn 1.2s ease;
+}
+
+.faq-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 48px;
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.faq-item {
+    background: white;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-light);
+    transition: var(--transition-fast);
+}
+
+.faq-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+}
+
+.faq-question {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.faq-answer {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ==================== MODAL PAIEMENT ==================== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-xl);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-header {
+    padding: 24px;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--error);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: var(--error);
+    color: white;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+/* Résumé paiement */
+.payment-summary {
+    background: var(--secondary-color);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.summary-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.summary-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.summary-divider {
+    height: 2px;
+    background: var(--border-color);
+    margin: 12px 0;
+}
+
+.summary-total {
+    padding-top: 12px;
+}
+
+.summary-total .summary-label {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.summary-total .summary-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* Info paiement */
+.payment-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.info-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #F5F7FA;
+    border-radius: var(--radius-md);
+}
+
+.info-icon {
+    font-size: 1.5rem;
+}
+
+.info-box p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Bouton procéder */
+.btn-proceed {
+    width: 100%;
+    padding: 18px;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-proceed:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.btn-proceed:disabled {
+    background: var(--text-secondary);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ==================== LOADING OVERLAY ==================== */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--secondary-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .header-container {
+        padding: 12px 16px;
+    }
+
+    .brand-name {
+        font-size: 1.1rem;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .subscription-container {
+        padding: 80px 16px 40px;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .price-amount {
+        font-size: 2.5rem;
+    }
+
+    .payment-info {
+        grid-template-columns: 1fr;
+    }
+
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.8rem;
+    }
+
+    .plan-name {
+        font-size: 1.5rem;
+    }
+
+    .price-amount {
+        font-size: 2rem;
+    }
+}
+</style>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <button class="back-btn" onclick="window.location.href='produit.html'">
+                <span>←</span>
+            </button>
+            
+            <div class="brand-section">
+                <div class="logo-image">🛍️</div>
+                <h1 class="brand-name"> Oda</h1>
+            </div>
+
+            <div class="header-actions">
+                <button class="icon-btn notification-btn">
+                    <span>🔔</span>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar-image"></div>
+                    <span class="user-name" id="userName">Admin</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteneur Principal -->
+    <div class="subscription-container">
+        <!-- En-tête de page -->
+        <div class="page-header">
+            <div class="header-icon">👑</div>
+            <h1 class="page-title">Choisissez votre Plan</h1>
+            <p class="page-subtitle">Développez votre boutique avec le plan qui correspond à vos besoins</p>
+        </div>
+
+        <!-- Statut Actuel -->
+        <div class="current-status" id="currentStatus">
+            <div class="status-content">
+                <div class="status-icon">📊</div>
+                <div class="status-info">
+                    <h3 class="status-title">Statut actuel</h3>
+                    <p class="status-text" id="statusText">Chargement...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grille des Plans -->
+        <div class="plans-grid">
+            <!-- Plan Gratuit -->
+            <div class="plan-card plan-free">
+                <div class="plan-badge">🎁 GRATUIT</div>
+                <div class="plan-header">
+                    <h2 class="plan-name">Débutant</h2>
+                    <div class="plan-price">
+                        <span class="price-amount">0</span>
+                        <span class="price-currency">FCFA</span>
+                    </div>
+                    <p class="plan-period">Toujours gratuit</p>
+                </div>
+
+                <div class="plan-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>10 produits</strong> maximum</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Gestion basique</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Support communautaire</span>
+                    </div>
+                    <div class="feature-item feature-disabled">
+                        <span class="feature-icon">✗</span>
+                        <span class="feature-text">Statistiques limitées</span>
+                    </div>
+                </div>
+
+                <button class="plan-btn btn-free" onclick="activerPlanGratuit()" id="btnGratuit">
+                    Plan Actuel
+                </button>
+
+                <div class="plan-note">
+                    <p>⚠️ Les produits au-delà de 10 seront automatiquement en brouillon</p>
+                </div>
+            </div>
+
+            <!-- Plan Starter -->
+            <div class="plan-card plan-starter">
+                <div class="plan-badge">🚀 POPULAIRE</div>
+                <div class="plan-header">
+                    <h2 class="plan-name">Starter</h2>
+                    <div class="plan-price">
+                        <span class="price-amount">1,000</span>
+                        <span class="price-currency">FCFA</span>
+                    </div>
+                    <p class="plan-period">Par mois</p>
+                </div>
+
+                <div class="plan-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>80 produits</strong> maximum</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Gestion avancée</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Statistiques détaillées</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Support prioritaire</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Export de données</span>
+                    </div>
+                </div>
+
+                <button class="plan-btn btn-starter" onclick="ouvrirModalPaiement('starter', 1000)" id="btnStarter">
+                    Choisir ce plan
+                </button>
+
+                <div class="plan-highlight">
+                    <p>💡 Idéal pour les petites boutiques</p>
+                </div>
+            </div>
+
+            <!-- Plan Business -->
+            <div class="plan-card plan-business">
+                <div class="plan-badge">⭐ RECOMMANDÉ</div>
+                <div class="plan-header">
+                    <h2 class="plan-name">Business</h2>
+                    <div class="plan-price">
+                        <span class="price-amount">1,500</span>
+                        <span class="price-currency">FCFA</span>
+                    </div>
+                    <p class="plan-period">Par mois</p>
+                </div>
+
+                <div class="plan-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>150 produits</strong> maximum</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Toutes les fonctionnalités Starter</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Analyses avancées</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Support premium 24/7</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Personnalisation boutique</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Promotions & codes promo</span>
+                    </div>
+                </div>
+
+                <button class="plan-btn btn-business" onclick="ouvrirModalPaiement('business', 1500)" id="btnBusiness">
+                    Choisir ce plan
+                </button>
+
+                <div class="plan-highlight">
+                    <p>🏆 Meilleur rapport qualité/prix</p>
+                </div>
+            </div>
+
+            <!-- Plan Premium -->
+            <div class="plan-card plan-premium">
+                <div class="plan-badge">💎 PREMIUM</div>
+                <div class="plan-header">
+                    <h2 class="plan-name">Premium</h2>
+                    <div class="plan-price">
+                        <span class="price-amount">2,500</span>
+                        <span class="price-currency">FCFA</span>
+                    </div>
+                    <p class="plan-period">Par mois</p>
+                </div>
+
+                <div class="plan-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text"><strong>250 produits</strong> maximum</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Toutes les fonctionnalités Business</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Gestion multi-boutiques</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">API & intégrations</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Compte manager dédié</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Formation personnalisée</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span class="feature-text">Priorité sur nouvelles fonctionnalités</span>
+                    </div>
+                </div>
+
+                <button class="plan-btn btn-premium" onclick="ouvrirModalPaiement('premium', 2500)" id="btnPremium">
+                    Choisir ce plan
+                </button>
+
+                <div class="plan-highlight">
+                    <p>👑 Pour les entrepreneurs ambitieux</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section FAQ -->
+        <div class="faq-section">
+            <h2 class="faq-title">Questions Fréquentes</h2>
+            
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3 class="faq-question">💳 Comment effectuer le paiement ?</h3>
+                    <p class="faq-answer">Le paiement s'effectue via Lygos. Après avoir choisi votre plan, vous serez redirigé vers une page de paiement sécurisée où vous pourrez choisir Orange Money ou MTN MoMo.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">🔄 Puis-je changer de plan ?</h3>
+                    <p class="faq-answer">Oui, vous pouvez upgrader ou downgrader votre plan à tout moment. Les changements sont effectifs immédiatement.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">📦 Que se passe-t-il si je dépasse la limite ?</h3>
+                    <p class="faq-answer">Les produits excédentaires sont automatiquement mis en brouillon. Ils redeviendront actifs une fois que vous aurez upgradé votre plan.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">⏰ Quelle est la durée de l'abonnement ?</h3>
+                    <p class="faq-answer">Tous les abonnements sont mensuels et se renouvellent automatiquement. Vous pouvez annuler à tout moment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Paiement -->
+    <div class="modal-overlay" id="modalPaiement">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Finaliser votre abonnement</h2>
+                <button class="modal-close" onclick="fermerModalPaiement()">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="payment-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">Plan sélectionné</span>
+                        <span class="summary-value" id="selectedPlan">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Nombre de produits</span>
+                        <span class="summary-value" id="productLimit">-</span>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-item summary-total">
+                        <span class="summary-label">Total à payer</span>
+                        <span class="summary-value" id="totalAmount">-</span>
+                    </div>
+                </div>
+
+                <div class="payment-info">
+                    <div class="info-box">
+                        <span class="info-icon">🔒</span>
+                        <p>Paiement 100% sécurisé via Lygos</p>
+                    </div>
+                    <div class="info-box">
+                        <span class="info-icon">⚡</span>
+                        <p>Activation immédiate après paiement</p>
+                    </div>
+                </div>
+
+                <button class="btn-proceed" onclick="procederPaiement()" id="btnProceed">
+                    Procéder au paiement 💳
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zone de Notification -->
+    <div id="notification-container"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Redirection vers Lygos...</p>
+    </div>
+
+<script type="module">
+    // ==================== SCRIPT CORRIGÉ POUR abonnement.html ====================
+// Remplacez tout le contenu du <script type="module"> par ce code
+
+const SUPABASE_URL = 'https://xjckbqbqxcwzcrlmuvzf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2ticWJxeGN3emNybG11dnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MTk1MzMsImV4cCI6MjA3NjA5NTUzM30.AMzAUwtjFt7Rvof5r2enMyYIYToc1wNWWEjvZqK_YXM';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const LYGOS_LINKS = {
+    starter: 'https://pay.lygosapp.com/link/5f7d2e93-4fbb-4732-a4a1-97c3a61a290d',
+    business: 'https://pay.lygosapp.com/link/adfb813a-05c7-4bf4-b3a8-7177250cb870',
+    premium: 'https://pay.lygosapp.com/link/e12eb1fc-3221-42cd-9101-7a4f31a4a145'
+};
+
+const RETURN_URL = window.location.origin + '/abonnement.html?payment=success';
+
+let currentUser = null;
+let abonnementActuel = null;
+let produits = [];
+let planSelectionne = null;
+let montantSelectionne = 0;
+
+// Plans disponibles
+const PLANS = {
+    gratuit: { nom: 'Débutant', limite: 10, prix: 0 },
+    starter: { nom: 'Starter', limite: 80, prix: 1000 },
+    business: { nom: 'Business', limite: 150, prix: 1500 },
+    premium: { nom: 'Premium', limite: 250, prix: 2500 }
+};
+
+// ============================================
+// INITIALISATION
+// ============================================
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🌸 Page Abonnements initialisée !');
+    
+    await verifierAuthentification();
+    await chargerDonnees();
+    initialiserEventListeners();
+    verifierRetourPaiement();
+    await initialiserSystemeAbonnement();
+    
+    console.log('✅ Page abonnements prête');
+});
+
+// ============================================
+// AUTHENTIFICATION
+// ============================================
+async function verifierAuthentification() {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (!session) {
+            console.warn('⚠️ Aucune session active');
+            window.location.href = 'index.html';
+            return;
+        }
+        
+        currentUser = session.user;
+        console.log('✅ Utilisateur connecté:', currentUser.email);
+        
+        const userNameElement = document.getElementById('userName');
+        if (userNameElement) {
+            userNameElement.textContent = currentUser.email.split('@')[0];
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur authentification:', error);
+        window.location.href = 'index.html';
+    }
+}
+
+// ============================================
+// CHARGEMENT DES DONNÉES
+// ============================================
+async function chargerDonnees() {
+    try {
+        await chargerAbonnement();
+        await chargerProduits();
+        mettreAJourStatut();
+        mettreAJourBoutons();
+    } catch (error) {
+        console.error('❌ Erreur chargement données:', error);
+    }
+}
+
+async function chargerAbonnement() {
+    try {
+        const { data, error } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (error && error.code !== 'PGRST116') {
+            throw error;
+        }
+
+        abonnementActuel = data;
+        console.log('📋 Abonnement actuel:', abonnementActuel);
+        
+    } catch (error) {
+        console.error('❌ Erreur chargement abonnement:', error);
+    }
+}
+
+async function chargerProduits() {
+    try {
+        const { data, error } = await supabase
+            .from('produits')
+            .select('id, statut, date_draft')
+            .eq('user_id', currentUser.id);
+
+        if (error) throw error;
+
+        produits = data || [];
+        console.log(`📦 ${produits.length} produit(s) chargé(s)`);
+        
+    } catch (error) {
+        console.error('❌ Erreur chargement produits:', error);
+    }
+}
+async function verifierQuotaAvantPublication(produitId = null) {
+    try {
+        // 🔍 Récupérer l'abonnement
+        const { data: abo, error: aboError } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        let limite = 10; // ✅ Plan gratuit PAR DÉFAUT
+        let planActif = false;
+        
+        // ✅ VÉRIFIER SI L'ABONNEMENT EST VALIDE ET ACTIF
+        if (abo && !aboError) {
+            const expiration = new Date(abo.date_expiration);
+            const maintenant = new Date();
+            
+            // Seulement appliquer la limite de l'abonnement s'il est ACTIF
+            if (expiration > maintenant) {
+                limite = abo.limite_produits;
+                planActif = true;
+                console.log(`✅ Abonnement ${abo.plan} actif: ${limite} produits max`);
+            } else {
+                console.log(`⚠️ Abonnement expiré, retour au plan gratuit: ${limite} produits max`);
+            }
+        } else {
+            console.log(`📊 Plan gratuit: ${limite} produits max`);
+        }
+
+        // 🔍 Compter les produits PUBLIÉS
+        const { data: produits, error: countError } = await supabase
+            .from('produits')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'published');
+
+        if (countError) throw countError;
+
+        let nombrePublies = produits ? produits.length : 0;
+        
+        // ✅ Si on édite un produit existant, ne pas le compter
+        if (produitId) {
+            const produitExiste = produits?.find(p => p.id === produitId);
+            if (produitExiste) {
+                nombrePublies--;
+            }
+        }
+
+        const restant = limite - nombrePublies;
+        const peutPublier = nombrePublies < limite;
+
+        console.log(`📊 Quota actuel: ${nombrePublies}/${limite} produits publiés (${restant} restant${restant > 1 ? 's' : ''})`);
+
+        return {
+            peutPublier,
+            nombrePublies,
+            limite,
+            restant,
+            planActif
+        };
+        
+    } catch (error) {
+        console.error('❌ Erreur vérification quota:', error);
+        // ✅ EN CAS D'ERREUR: Retourner le plan gratuit par défaut
+        return { 
+            peutPublier: false, 
+            nombrePublies: 0, 
+            limite: 10, 
+            restant: 10,
+            planActif: false 
+        };
+    }
+}
+
+// ============================================
+// AFFICHAGE DU STATUT
+// ============================================
+function mettreAJourStatut() {
+    const statusText = document.getElementById('statusText');
+    if (!statusText) return;
+
+    const nombrePublies = produits.filter(p => p.statut === 'published').length;
+    
+    if (!abonnementActuel) {
+        statusText.innerHTML = `
+            <strong>Plan Gratuit</strong> • 
+            ${nombrePublies}/10 produits publiés
+            ${nombrePublies >= 10 ? '<br><span style="color: var(--error);">⚠️ Limite atteinte</span>' : ''}
+        `;
+        return;
+    }
+
+    const expiration = new Date(abonnementActuel.date_expiration);
+    const maintenant = new Date();
+    const joursRestants = Math.ceil((expiration - maintenant) / (1000 * 60 * 60 * 24));
+    
+    if (joursRestants <= 0) {
+        statusText.innerHTML = `
+            <strong style="color: var(--error);">Abonnement expiré</strong> • 
+            Tous vos produits sont en brouillon
+        `;
+    } else {
+        statusText.innerHTML = `
+            <strong>Plan ${abonnementActuel.plan.toUpperCase()}</strong> • 
+            ${nombrePublies}/${abonnementActuel.limite_produits} produits publiés • 
+            Expire dans ${joursRestants} jour${joursRestants > 1 ? 's' : ''}
+        `;
+    }
+}
+
+function mettreAJourBoutons() {
+    const btnGratuit = document.getElementById('btnGratuit');
+    const btnStarter = document.getElementById('btnStarter');
+    const btnBusiness = document.getElementById('btnBusiness');
+    const btnPremium = document.getElementById('btnPremium');
+
+    [btnGratuit, btnStarter, btnBusiness, btnPremium].forEach(btn => {
+        if (btn) {
+            btn.textContent = 'Choisir ce plan';
+            btn.disabled = false;
+            btn.style.cursor = 'pointer';
+        }
+    });
+
+    if (!abonnementActuel) {
+        if (btnGratuit) {
+            btnGratuit.textContent = '✓ Plan Actuel';
+            btnGratuit.disabled = true;
+            btnGratuit.style.cursor = 'not-allowed';
+        }
+        return;
+    }
+
+    const expiration = new Date(abonnementActuel.date_expiration);
+    const maintenant = new Date();
+    
+    if (expiration <= maintenant) {
+        return;
+    }
+
+    const planActuel = abonnementActuel.plan;
+    
+    if (planActuel === 'starter' && btnStarter) {
+        btnStarter.textContent = '✓ Plan Actuel';
+        btnStarter.disabled = true;
+        btnStarter.style.cursor = 'not-allowed';
+    }
+    if (planActuel === 'business' && btnBusiness) {
+        btnBusiness.textContent = '✓ Plan Actuel';
+        btnBusiness.disabled = true;
+        btnBusiness.style.cursor = 'not-allowed';
+    }
+    if (planActuel === 'premium' && btnPremium) {
+        btnPremium.textContent = '✓ Plan Actuel';
+        btnPremium.disabled = true;
+        btnPremium.style.cursor = 'not-allowed';
+    }
+}
+
+// ============================================
+// GESTION DES PRODUITS SELON LIMITE
+// ============================================
+async function gererProduitsSelonLimite(limite) {
+    try {
+        console.log(`📦 Gestion des produits selon limite: ${limite}`);
+        
+        // Récupérer TOUS les produits de l'utilisateur, triés du plus ANCIEN au plus RÉCENT
+        const { data: tousProduits, error: fetchError } = await supabase
+            .from('produits')
+            .select('id, nom, statut, created_at')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: true }); // ✅ IMPORTANT: Du plus ancien au plus récent
+
+        if (fetchError) throw fetchError;
+
+        if (!tousProduits || tousProduits.length === 0) {
+            console.log('ℹ️ Aucun produit à gérer');
+            return;
+        }
+
+        const nombreTotal = tousProduits.length;
+        
+        console.log(`📊 Total produits: ${nombreTotal}, Limite autorisée: ${limite}`);
+
+        // ✅ STRATÉGIE: Publier les X premiers (les plus anciens), mettre le reste en brouillon
+        
+        // Les X premiers produits (les plus anciens) doivent être publiés
+        const produitsAPublier = tousProduits.slice(0, limite);
+        
+        // Tous les produits au-delà de la limite doivent être en brouillon
+        const produitsAMettreDraft = tousProduits.slice(limite);
+
+        let nombrePublies = 0;
+        let nombreMisDraft = 0;
+
+        // ✅ ÉTAPE 1: Publier les X premiers produits s'ils ne le sont pas déjà
+        const idsAPublier = produitsAPublier
+            .filter(p => p.statut !== 'published')
+            .map(p => p.id);
+
+        if (idsAPublier.length > 0) {
+            const { error: updateError } = await supabase
+                .from('produits')
+                .update({ 
+                    statut: 'published',
+                    date_draft: null
+                })
+                .in('id', idsAPublier);
+
+            if (updateError) throw updateError;
+            
+            nombrePublies = idsAPublier.length;
+            console.log(`✅ ${nombrePublies} produit(s) publiés (les plus anciens)`);
+        }
+
+        // ⚠️ ÉTAPE 2: Mettre en brouillon tous les produits au-delà de la limite
+        const idsAMettreDraft = produitsAMettreDraft
+            .filter(p => p.statut === 'published')
+            .map(p => p.id);
+
+        if (idsAMettreDraft.length > 0) {
+            const { error: updateError } = await supabase
+                .from('produits')
+                .update({ 
+                    statut: 'draft',
+                    date_draft: new Date().toISOString()
+                })
+                .in('id', idsAMettreDraft);
+
+            if (updateError) throw updateError;
+            
+            nombreMisDraft = idsAMettreDraft.length;
+            console.log(`⚠️ ${nombreMisDraft} produit(s) mis en brouillon (dépassent la limite)`);
+        }
+
+        // Afficher notification appropriée
+        if (nombrePublies > 0 && nombreMisDraft > 0) {
+            afficherNotification(
+                `✅ ${nombrePublies} produits publiés, ${nombreMisDraft} mis en brouillon`,
+                'info'
+            );
+        } else if (nombrePublies > 0) {
+            afficherNotification(
+                `✅ ${nombrePublies} produit(s) publiés automatiquement`,
+                'success'
+            );
+        } else if (nombreMisDraft > 0) {
+            afficherNotification(
+                `⚠️ ${nombreMisDraft} produit(s) mis en brouillon (limite: ${limite})`,
+                'warning'
+            );
+        } else {
+            console.log(`✅ Quota OK: Les ${limite} premiers produits sont publiés`);
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur gestion produits:', error);
+        afficherNotification('⚠️ Erreur lors de la gestion des produits', 'warning');
+    }
+}
+
+// ============================================
+// ACTIVATION ABONNEMENT
+// ============================================
+async function activerAbonnement(info) {
+    try {
+        console.log('🔄 Activation de l\'abonnement...');
+        
+        const dateDebut = new Date();
+        const dateExpiration = new Date();
+        dateExpiration.setMonth(dateExpiration.getMonth() + 1);
+        
+        // ✅ D'ABORD créer/mettre à jour l'abonnement
+        const { data, error } = await supabase
+            .from('abonnements')
+            .upsert({
+                user_id: currentUser.id,
+                plan: info.plan,
+                limite_produits: info.limite,
+                date_debut: dateDebut.toISOString(),
+                date_expiration: dateExpiration.toISOString(),
+                statut: 'actif',
+                montant: info.prix
+            }, { 
+                onConflict: 'user_id',
+                ignoreDuplicates: false 
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('❌ Erreur lors de l\'activation:', error);
+            throw error;
+        }
+        
+        console.log('✅ Abonnement créé/mis à jour:', data);
+        
+        // ✅ PUIS recharger les données pour avoir l'abonnement actuel
+        await chargerDonnees();
+        
+        // ✅ ENFIN gérer les produits selon la nouvelle limite
+        await gererProduitsSelonLimite(info.limite);
+        
+        afficherNotification('✅ Abonnement activé avec succès !', 'success');
+        
+        setTimeout(() => {
+            window.location.href = 'produit.html';
+        }, 3000);
+        
+    } catch (error) {
+        console.error('❌ Erreur activation abonnement:', error);
+        afficherNotification('❌ Erreur lors de l\'activation de l\'abonnement', 'error');
+    }
+}
+// ============================================
+// SYSTÈME DE NETTOYAGE AUTOMATIQUE
+// ============================================
+async function gererProduitsExpires() {
+    try {
+        if (!currentUser) return;
+
+        const { data: abo, error: aboError } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (aboError && aboError.code !== 'PGRST116') {
+            console.error('Erreur récupération abonnement:', aboError);
+            return;
+        }
+
+        if (!abo || new Date(abo.date_expiration) <= new Date()) {
+            console.log('⚠️ Abonnement expiré - Mise en brouillon des produits');
+            
+            const { data: produits, error: updateError } = await supabase
+                .from('produits')
+                .update({ 
+                    statut: 'draft',
+                    date_draft: new Date().toISOString()
+                })
+                .eq('user_id', currentUser.id)
+                .eq('statut', 'published')
+                .select();
+
+            if (updateError) throw updateError;
+
+            if (produits && produits.length > 0) {
+                console.log(`📦 ${produits.length} produit(s) mis en brouillon`);
+            }
+        }
+    } catch (error) {
+        console.error('❌ Erreur gestion produits expirés:', error);
+    }
+}
+
+async function supprimerProduitsAnciens() {
+    try {
+        if (!currentUser) return;
+
+        const dateLimite = new Date();
+        dateLimite.setDate(dateLimite.getDate() - 14);
+        const dateLimiteISO = dateLimite.toISOString();
+
+        console.log(`🗑️ Recherche des produits en brouillon depuis plus de 14 jours`);
+
+        const { data: produitsASupprimer, error: fetchError } = await supabase
+            .from('produits')
+            .select('id, nom, date_draft, created_at')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'draft')
+            .not('date_draft', 'is', null)
+            .lt('date_draft', dateLimiteISO);
+
+        if (fetchError) throw fetchError;
+
+        if (!produitsASupprimer || produitsASupprimer.length === 0) {
+            console.log('ℹ️ Aucun produit ancien à supprimer');
+            return;
+        }
+
+        console.log(`⚠️ ${produitsASupprimer.length} produit(s) à supprimer`);
+
+        const ids = produitsASupprimer.map(p => p.id);
+        const { error: deleteError } = await supabase
+            .from('produits')
+            .delete()
+            .in('id', ids);
+
+        if (deleteError) throw deleteError;
+
+        console.log(`✅ ${produitsASupprimer.length} produit(s) supprimé(s) automatiquement`);
+        
+        afficherNotification(
+            `🗑️ ${produitsASupprimer.length} produit(s) en brouillon depuis plus de 14 jours ont été supprimés`,
+            'info'
+        );
+
+    } catch (error) {
+        console.error('❌ Erreur suppression produits anciens:', error);
+    }
+}
+
+async function afficherAvertissementProduitsEnDanger() {
+    try {
+        if (!currentUser) return;
+
+        const date7Jours = new Date();
+        date7Jours.setDate(date7Jours.getDate() - 7);
+        
+        const date14Jours = new Date();
+        date14Jours.setDate(date14Jours.getDate() - 14);
+
+        const { data: produitsEnDanger, error } = await supabase
+            .from('produits')
+            .select('id, nom, date_draft')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'draft')
+            .not('date_draft', 'is', null)
+            .lt('date_draft', date7Jours.toISOString())
+            .gte('date_draft', date14Jours.toISOString());
+
+        if (error) throw error;
+
+        if (!produitsEnDanger || produitsEnDanger.length === 0) {
+            return;
+        }
+
+        const banniere = document.createElement('div');
+        banniere.id = 'warning-banner';
+        banniere.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #FF9500 0%, #FF6B00 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(255, 149, 0, 0.3);
+            z-index: 1500;
+            max-width: 600px;
+            width: 90%;
+            animation: slideDown 0.5s ease;
+            font-family: 'Poppins', sans-serif;
+        `;
+
+        const joursRestants = produitsEnDanger.map(p => {
+            const joursBrouillon = Math.floor((new Date() - new Date(p.date_draft)) / (1000 * 60 * 60 * 24));
+            return 14 - joursBrouillon;
+        });
+        const minJours = Math.min(...joursRestants);
+
+        banniere.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 2.5rem;">⚠️</div>
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 700;">
+                        Attention : Produits en danger !
+                    </h3>
+                    <p style="margin: 0 0 12px 0; font-size: 0.9rem; opacity: 0.95;">
+                        ${produitsEnDanger.length} produit(s) seront supprimés dans ${minJours} jour${minJours > 1 ? 's' : ''}.
+                    </p>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="window.location.href='abonnement.html'" 
+                                style="padding: 10px 20px; background: white; color: #FF9500; 
+                                       border: none; border-radius: 10px; font-weight: 700; 
+                                       cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.85rem;">
+                            🔄 Réactiver
+                        </button>
+                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" 
+                                style="padding: 10px 20px; background: rgba(255, 255, 255, 0.2); color: white; 
+                                       border: 2px solid white; border-radius: 10px; font-weight: 600; 
+                                       cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.85rem;">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(banniere);
+
+    } catch (error) {
+        console.error('❌ Erreur affichage avertissement:', error);
+    }
+}
+
+async function initialiserSystemeAbonnement() {
+    try {
+        console.log('🚀 Initialisation du système d\'abonnement...');
+        
+        await gererProduitsExpires();
+        await supprimerProduitsAnciens();
+        await afficherAvertissementProduitsEnDanger();
+        
+        console.log('✅ Système d\'abonnement initialisé');
+        
+    } catch (error) {
+        console.error('❌ Erreur initialisation système:', error);
+    }
+}
+
+// ============================================
+// MODAL PAIEMENT
+// ============================================
+window.activerPlanGratuit = async function() {
+    afficherNotification('ℹ️ Vous êtes déjà sur le plan gratuit', 'info');
+};
+
+window.ouvrirModalPaiement = function(plan, montant) {
+    planSelectionne = plan;
+    montantSelectionne = montant;
+    
+    const modal = document.getElementById('modalPaiement');
+    const selectedPlan = document.getElementById('selectedPlan');
+    const productLimit = document.getElementById('productLimit');
+    const totalAmount = document.getElementById('totalAmount');
+    
+    if (!modal) return;
+    
+    if (selectedPlan) {
+        selectedPlan.textContent = PLANS[plan].nom;
+    }
+    if (productLimit) {
+        productLimit.textContent = `${PLANS[plan].limite} produits`;
+    }
+    if (totalAmount) {
+        totalAmount.textContent = `${montant.toLocaleString('fr-FR')} FCFA`;
+    }
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    console.log('📝 Plan sélectionné:', plan, montant);
+};
+
+window.fermerModalPaiement = function() {
+    const modal = document.getElementById('modalPaiement');
+    
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    planSelectionne = null;
+    montantSelectionne = 0;
+};
+
+window.procederPaiement = async function() {
+    const btnProceed = document.getElementById('btnProceed');
+    
+    if (!planSelectionne) {
+        afficherNotification('❌ Erreur: aucun plan sélectionné', 'error');
+        return;
+    }
+    
+    const lienPaiement = LYGOS_LINKS[planSelectionne];
+    
+    if (!lienPaiement || lienPaiement.includes('votre-lien-unique')) {
+        console.error('❌ Lien de paiement non configuré pour:', planSelectionne);
+        afficherNotification(
+            '⚠️ Configuration requise : Veuillez configurer vos liens de paiement Lygos',
+            'error'
+        );
+        return;
+    }
+    
+    if (btnProceed) {
+        btnProceed.disabled = true;
+        btnProceed.textContent = '⏳ Préparation...';
+    }
+    
+    try {
+        const paiementInfo = {
+            plan: planSelectionne,
+            prix: montantSelectionne,
+            limite: PLANS[planSelectionne].limite,
+            date: new Date().toISOString(),
+            user_id: currentUser.id,
+            user_email: currentUser.email
+        };
+        
+        localStorage.setItem('paiement_en_attente', JSON.stringify(paiementInfo));
+        
+        console.log('💳 Redirection vers Lygos:', planSelectionne);
+        
+        fermerModalPaiement();
+        
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+        }
+        
+        afficherNotification('🔄 Redirection vers le paiement...', 'info');
+        
+        setTimeout(() => {
+            window.location.href = lienPaiement;
+        }, 1000);
+        
+    } catch (error) {
+        console.error('❌ Erreur:', error);
+        afficherNotification('❌ Erreur lors de la préparation du paiement', 'error');
+        
+        if (btnProceed) {
+            btnProceed.disabled = false;
+            btnProceed.textContent = 'Procéder au paiement 💳';
+        }
+    }
+};
+
+async function gererAbonnementExpire() {
+    try {
+        console.log('⚠️ Abonnement expiré - Application du plan gratuit (10 produits)');
+        
+        // Récupérer tous les produits, triés du plus ANCIEN au plus RÉCENT
+        const { data: tousProduits, error: fetchError } = await supabase
+            .from('produits')
+            .select('id, nom, statut, created_at, date_draft')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: true }); // ✅ Du plus ancien au plus récent
+
+        if (fetchError) throw fetchError;
+
+        if (!tousProduits || tousProduits.length === 0) {
+            console.log('ℹ️ Aucun produit à gérer');
+            return;
+        }
+
+        const limite = 10; // ✅ Plan gratuit = 10 produits maximum
+        const maintenant = new Date();
+
+        // Les 10 premiers produits restent publiés
+        const produitsAGarderPublies = tousProduits.slice(0, limite);
+        
+        // Tous les autres passent en brouillon
+        const produitsAMettreDraft = tousProduits.slice(limite);
+
+        // ✅ ÉTAPE 1: Publier les 10 premiers s'ils ne le sont pas
+        const idsAPublier = produitsAGarderPublies
+            .filter(p => p.statut !== 'published')
+            .map(p => p.id);
+
+        if (idsAPublier.length > 0) {
+            await supabase
+                .from('produits')
+                .update({ 
+                    statut: 'published',
+                    date_draft: null
+                })
+                .in('id', idsAPublier);
+
+            console.log(`✅ ${idsAPublier.length} produit(s) gardés actifs`);
+        }
+
+        // ⚠️ ÉTAPE 2: Mettre les autres en brouillon AVEC date_draft
+        const idsAMettreDraft = produitsAMettreDraft
+            .filter(p => p.statut === 'published')
+            .map(p => p.id);
+
+        if (idsAMettreDraft.length > 0) {
+            await supabase
+                .from('produits')
+                .update({ 
+                    statut: 'draft',
+                    date_draft: maintenant.toISOString() // ✅ IMPORTANT: Enregistrer la date
+                })
+                .in('id', idsAMettreDraft);
+
+            console.log(`⚠️ ${idsAMettreDraft.length} produit(s) mis en brouillon`);
+            
+            afficherNotification(
+                `⚠️ Abonnement expiré: ${idsAMettreDraft.length} produits mis en brouillon. Vous avez 14 jours pour renouveler avant suppression automatique.`,
+                'warning'
+            );
+        }
+
+        // 🗑️ ÉTAPE 3: Supprimer les produits en brouillon depuis plus de 14 jours
+        const date14JoursAvant = new Date();
+        date14JoursAvant.setDate(date14JoursAvant.getDate() - 14);
+
+        const produitsASupprimer = produitsAMettreDraft.filter(p => {
+            if (!p.date_draft) return false;
+            const dateDraft = new Date(p.date_draft);
+            return dateDraft <= date14JoursAvant;
+        });
+
+        if (produitsASupprimer.length > 0) {
+            const idsASupprimer = produitsASupprimer.map(p => p.id);
+            
+            const { error: deleteError } = await supabase
+                .from('produits')
+                .delete()
+                .in('id', idsASupprimer);
+
+            if (deleteError) throw deleteError;
+
+            console.log(`🗑️ ${produitsASupprimer.length} produit(s) supprimés (brouillon > 14 jours)`);
+            
+            afficherNotification(
+                `🗑️ ${produitsASupprimer.length} produit(s) supprimés automatiquement (brouillon depuis plus de 14 jours).`,
+                'error'
+            );
+        }
+        
+        await chargerProduits();
+        
+    } catch (error) {
+        console.error('❌ Erreur gestion expiration:', error);
+    }
+}
+// ============================================
+// VÉRIFIER RETOUR PAIEMENT
+// ============================================
+async function verifierRetourPaiement() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paiementReussi = urlParams.get('payment') === 'success';
+    
+    if (paiementReussi) {
+        console.log('🎉 Retour d\'un paiement réussi détecté');
+        
+        const paiementInfo = localStorage.getItem('paiement_en_attente');
+        
+        if (paiementInfo) {
+            try {
+                const info = JSON.parse(paiementInfo);
+                console.log('📝 Informations du paiement:', info);
+                
+                if (info.user_id === currentUser.id) {
+                    afficherNotification('⏳ Activation de votre abonnement en cours...', 'info');
+                    await activerAbonnement(info);
+                    localStorage.removeItem('paiement_en_attente');
+                } else {
+                    console.error('❌ User ID mismatch');
+                    afficherNotification('Erreur : utilisateur non correspondant', 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erreur parsing paiement info:', error);
+                afficherNotification('Erreur lors de la validation du paiement', 'error');
+            }
+        } else {
+            console.warn('⚠️ Aucune information de paiement trouvée');
+            afficherNotification('Aucune information de paiement trouvée', 'warning');
+        }
+        
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+function initialiserEventListeners() {
+    const modal = document.getElementById('modalPaiement');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target.id === 'modalPaiement') {
+                fermerModalPaiement();
+            }
+        });
+    }
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            fermerModalPaiement();
+        }
+    });
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+function afficherNotification(message, type = 'info') {
+    let conteneur = document.getElementById('notification-container');
+
+    if (!conteneur) {
+        conteneur = document.createElement('div');
+        conteneur.id = 'notification-container';
+        conteneur.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        `;
+        document.body.appendChild(conteneur);
+    }
+
+    const couleurs = {
+        success: '#4CAF50',
+        error: '#f44336',
+        info: '#007AFF',
+        warning: '#FF9800'
+    };
+
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        background: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid ${couleurs[type]};
+        animation: slideIn 0.5s ease;
+        max-width: 350px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        color: #333;
+    `;
+    notification.textContent = message;
+
+    conteneur.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
+    }, 4000);
+}
+
+// ============================================
+// LOG DE DÉMARRAGE
+// ============================================
+console.log('%c👑 Page Abonnements - Ma Boutique Élégante 👑', 'color: #FFFF')
+</script>
+</body>
+</html>

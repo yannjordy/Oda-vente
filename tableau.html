@@ -1,0 +1,1559 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Ma Boutique Élégante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="oda.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Menu Hamburger Overlay -->
+    <div class="hamburger-overlay" id="hamburgerOverlay"></div>
+    
+    <!-- Menu Hamburger -->
+    <div class="hamburger-menu" id="hamburgerMenu">
+        <div class="hamburger-header">
+            <div class="brand-section">
+                <div class="logo-image"></div>
+                <h1 class="brand-name">ODA</h1>
+            </div>
+            <button class="close-menu" id="closeMenu">
+                <span>×</span>
+            </button>
+        </div>
+        
+        <nav class="hamburger-nav">
+            <a href="#" class="hamburger-link active">
+                <span class="link-icon">📊</span>
+                <span>Tableau de bord</span>
+            </a>
+            <a href="produit.html" class="hamburger-link">
+                <span class="link-icon">📦</span>
+                <span>Produits</span>
+            </a>
+            <a href="commandes.html" class="hamburger-link">
+                <span class="link-icon">📋</span>
+                <span>Commandes</span>
+            </a>
+            <a href="clients.html" class="hamburger-link">
+                <span class="link-icon">👥</span>
+                <span>Clients</span>
+            </a>
+            <a href="messages.html" class="hamburger-link">
+                <span class="link-icon">💬</span>
+                <span>Messages</span>
+            </a>
+            
+            <div class="hamburger-divider"></div>
+            
+            <a href="statitique.html" class="hamburger-link">
+                <span class="link-icon">📊</span>
+                <span>Statistiques</span>
+            </a>
+            <a href="parametres.html" class="hamburger-link">
+                <span class="link-icon">⚙️</span>
+                <span>Paramètres</span>
+            </a>
+            <a href="boutique.html" class="hamburger-link">
+                <span class="link-icon">🏪</span>
+                <span>Voir ma boutique</span>
+            </a>
+        </nav>
+        
+        <a href="https://whatsapp.com/channel/0029Vb6mcUm5q08htMMdVA2v" class="hamburger-link">
+            <span class="link-icon">✆</span>
+            <span>Rejoindre notre chaine</span>
+        </a>
+        <a href="https://t.me/+hqymnTrseaU2OWRk" class="hamburger-link">
+            <span class="link-icon">🗩</span>
+            <span>rejoindre notre groupe telegram</span>
+        </a>
+    </div>
+
+    <header class="main-header">
+        <div class="header-container">
+            <button class="hamburger-btn" id="hamburgerBtn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="brand-section">
+                <h1 class="brand-name"> Oda</h1>
+            </div>
+
+            <div class="header-actions">
+                <button class="icon-btn notification-btn">
+                    <span>🔔</span>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar-image"></div>
+                    <span class="user-name">Admin</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar-left">
+            <div class="action-section">
+                <button class="btn-new-product">
+                    <span>+</span>
+                    <span>Nouveau produit</span>
+                </button>
+            </div>
+
+            <section class="kpi-section">
+                <h2 class="sidebar-title">Aujourd'hui</h2>
+                <div class="kpi-card">
+                    <div class="kpi-icon">💰</div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Chiffre d'affaires</p>
+                        <p class="kpi-value">0 FCFA</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon">📦</div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Commandes</p>
+                        <p class="kpi-value">0</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon">🛍️</div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">produits</p>
+                        <p class="kpi-value">0</p>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h2 class="page-title">Ajouter un nouveau produit</h2>
+                <p class="page-subtitle">Complétez les informations ci-dessous pour créer votre produit</p>
+            </div>
+
+            <form class="product-form" id="productForm">
+                <section class="form-section">
+                    <h3 class="section-title">📸 Image principale du produit</h3>
+                    <p class="section-description">Ajoutez l'image principale qui représentera votre produit</p>
+                    
+                    <div class="image-upload-container">
+                        <label for="productMainImage" class="upload-label">
+                            <div class="upload-zone">
+                                <div class="upload-icon">📸</div>
+                                <p class="upload-text">Cliquez pour ajouter l'image principale</p>
+                                <p class="upload-hint">PNG, JPG jusqu'à 5MB</p>
+                            </div>
+                        </label>
+                        <input type="file" id="productMainImage" accept="image/*" style="display: none;">
+                        
+                        <div id="mainImagePreview">
+                            <div class="image-preview-wrapper">
+                                <img id="mainImagePreviewImg">
+                                <button type="button" id="removeMainImage" class="remove-image-btn">×</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h3 class="section-title">📝 Informations de base</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nom du produit <span class="required">*</span></label>
+                        <input type="text" id="productName" class="form-input" placeholder="Ex: Robe élégante fleurie" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description <span class="required">*</span></label>
+                        <textarea id="productDescription" class="form-textarea" placeholder="Décrivez votre produit en détail..." required></textarea>
+                    </div>
+
+                    <div class="description-images-section">
+                        <h4 class="description-images-title">🖼️ Images de description (Maximum 3)</h4>
+                        <p class="description-images-hint">Ajoutez jusqu'à 3 images pour illustrer votre description produit</p>
+                        
+                        <div class="description-images-grid" id="descriptionImagesGrid">
+                            <div class="description-image-slot" data-slot="1">
+                                <div class="description-image-placeholder">
+                                    <div class="description-image-icon">🖼️</div>
+                                    <p>Image 1</p>
+                                </div>
+                                <input type="file" accept="image/*" style="display: none;" class="desc-image-input">
+                            </div>
+                            
+                            <div class="description-image-slot" data-slot="2">
+                                <div class="description-image-placeholder">
+                                    <div class="description-image-icon">🖼️</div>
+                                    <p>Image 2</p>
+                                </div>
+                                <input type="file" accept="image/*" style="display: none;" class="desc-image-input">
+                            </div>
+                            
+                            <div class="description-image-slot" data-slot="3">
+                                <div class="description-image-placeholder">
+                                    <div class="description-image-icon">🖼️</div>
+                                    <p>Image 3</p>
+                                </div>
+                                <input type="file" accept="image/*" style="display: none;" class="desc-image-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Prix (FCFA) <span class="required">*</span></label>
+                            <input type="number" id="productPrice" class="form-input" placeholder="15000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Stock <span class="required">*</span></label>
+                            <input type="number" id="productStock" class="form-input" placeholder="50" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Catégorie <span class="required">*</span></label>
+                        <select id="productCategory" class="form-select" required>
+                            <option value="">Sélectionnez une catégorie</option>
+                            <option value="Vetements">Vetements</option>
+                            <option value="Electroniques">Electroniques</option>
+                            <option value="Decoration">Decoration</option>
+                            <option value="Accessoires">Accessoires</option>
+                            <option value="Electromenager">Electromenager</option>
+                            <option value="Beaute & soin">Beaute & soin</option>
+                            <option value="Accessoires">Accessoires</option>
+                            <option value="Bebe">Bebe</option>
+                            <option value="jeux & jouets">jeux & jouets</option>
+                            <option value="Bricolage">Bricolage</option>
+                            <option value="Alimentation">Alimentation</option>
+                            <option value="Boissons">Boissons</option>
+                            <option value="Livre">Livre</option>
+                            <option value="Hygiene & sante">Hygiene & sante</option>
+                            <option value="fitness">fitness</option>
+                            <option value="Animaux">Animaux</option>
+                            <option value="Luxe">Luxe</option>
+                            <option value="Bureau">Bureau</option>
+                        </select>
+                    </div>
+                </section>
+
+                <section class="form-section">
+                    <h3 class="section-title">🚀 Statut de publication</h3>
+                    
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="statusPublished" name="productStatus" value="published" checked>
+                            <label for="statusPublished" class="radio-label">
+                                <span class="radio-custom"></span>
+                                <div>
+                                    <strong>Publié</strong>
+                                    <p>Le produit sera visible sur votre boutique</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="radio-item">
+                            <input type="radio" id="statusDraft" name="productStatus" value="draft">
+                            <label for="statusDraft" class="radio-label">
+                                <span class="radio-custom"></span>
+                                <div>
+                                    <strong>Brouillon</strong>
+                                    <p>Le produit ne sera pas visible publiquement</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary">Aperçu</button>
+                    <button type="submit" class="btn-primary">Enregistrer le produit</button>
+                </div>
+            </form>
+        </main>
+
+        <aside class="sidebar-right">
+            <section class="preview-section">
+                <h3 class="sidebar-title">👁️ Aperçu du produit</h3>
+                
+                <div class="product-preview-card">
+                    <div class="preview-image-container">
+                        <div class="preview-placeholder">
+                            <p>🖼️</p>
+                            <p>Image principale</p>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-content">
+                        <h4 class="preview-title" id="previewTitle">Nom du produit</h4>
+                        <p class="preview-description" id="previewDescription">La description apparaîtra ici...</p>
+                        
+                        <div id="previewDescImages"></div>
+                        
+                        <p class="preview-price" id="previewPrice">0 FCFA</p>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </div>
+<script type="module">
+    // ==================== CONFIGURATION SUPABASE ====================
+const SUPABASE_URL = 'https://xjckbqbqxcwzcrlmuvzf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY2ticWJxeGN3emNybG11dnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MTk1MzMsImV4cCI6MjA3NjA5NTUzM30.AMzAUwtjFt7Rvof5r2enMyYIYToc1wNWWEjvZqK_YXM';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==================== VARIABLES GLOBALES ====================
+let produits = [];
+let descriptionImages = [null, null, null];
+let mainImage = null;
+let produitEnEdition = null;
+let currentUser = null;
+let abonnementActuel = null;
+
+// ==================== INITIALISATION ====================
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🌸 Tableau de bord initialisé !');
+    
+    await verifierAuthentification();
+    initialiserMenuHamburger();
+    await verifierConfiguration();
+    initialiserEvenements();
+    await initialiserSystemeAbonnement();
+    await chargerProduits();
+    await chargerStatistiques();
+    await verifierEditionDepuisLocalStorage();
+    await afficherStatutAbonnement();
+    ajouterBoutonAbonnement();
+});
+
+// ==================== AUTHENTIFICATION ====================
+async function verifierAuthentification() {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (!session) {
+            console.warn('⚠️ Aucune session active');
+            window.location.href = 'connexion.html';
+            return;
+        }
+        
+        currentUser = session.user;
+        console.log('✅ Utilisateur connecté:', currentUser.email);
+        
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+            userNameElement.textContent = currentUser.email.split('@')[0];
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur authentification:', error);
+        window.location.href = 'connexion.html';
+    }
+}
+
+// ==================== MENU HAMBURGER ====================
+function initialiserMenuHamburger() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const hamburgerOverlay = document.getElementById('hamburgerOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+    
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', () => {
+            hamburgerBtn.classList.toggle('active');
+            hamburgerMenu?.classList.toggle('active');
+            hamburgerOverlay?.classList.toggle('active');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+    
+    const fermerMenu = () => {
+        hamburgerBtn?.classList.remove('active');
+        hamburgerMenu?.classList.remove('active');
+        hamburgerOverlay?.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+    
+    if (closeMenu) {
+        closeMenu.addEventListener('click', fermerMenu);
+    }
+    
+    if (hamburgerOverlay) {
+        hamburgerOverlay.addEventListener('click', fermerMenu);
+    }
+    
+    const hamburgerLinks = document.querySelectorAll('.hamburger-link');
+    hamburgerLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            setTimeout(fermerMenu, 300);
+        });
+    });
+    
+    console.log('📱 Menu hamburger initialisé');
+}
+
+// ==================== VÉRIFICATION CONFIGURATION ====================
+async function verifierConfiguration() {
+    try {
+        console.log('🔍 Vérification de la configuration Supabase...');
+        
+        const { data, error } = await supabase
+            .from('produits')
+            .select('count')
+            .limit(1);
+
+        if (error) {
+            console.error('❌ Erreur de connexion:', error);
+            if (error.code === 'PGRST116') {
+                afficherNotification('⚠️ La table "produits" n\'existe pas.', 'warning');
+            } else if (error.message.includes('JWT')) {
+                afficherNotification('⚠️ Erreur d\'authentification.', 'warning');
+            }
+        } else {
+            console.log('✅ Connexion Supabase réussie !');
+        }
+
+        const { data: buckets } = await supabase.storage.listBuckets();
+
+        if (buckets) {
+            const imagesBucket = buckets.find(b => b.name === 'images-produits');
+            if (!imagesBucket) {
+                console.warn('⚠️ Le bucket "images-produits" n\'existe pas');
+                afficherNotification('⚠️ Créez le bucket "images-produits"', 'warning');
+            } else {
+                console.log('✅ Bucket "images-produits" trouvé !');
+            }
+        }
+
+    } catch (error) {
+        console.error('❌ Erreur lors de la vérification:', error);
+    }
+}
+
+// ==================== BOUTON ABONNEMENT ====================
+function ajouterBoutonAbonnement() {
+    const headerActions = document.querySelector('.header-actions');
+    if (!headerActions || document.getElementById('btn-abonnement')) return;
+
+    const btnAbonnement = document.createElement('a');
+    btnAbonnement.id = 'btn-abonnement';
+    btnAbonnement.href = 'abonnement.html';
+    btnAbonnement.style.cssText = `
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 12px rgba(255, 165, 0, 0.3);
+    `;
+    btnAbonnement.innerHTML = '🗓️ Abonnements';
+
+    btnAbonnement.addEventListener('mouseover', () => {
+        btnAbonnement.style.transform = 'translateY(-2px)';
+        btnAbonnement.style.boxShadow = '0 6px 16px rgba(255, 165, 0, 0.4)';
+    });
+
+    btnAbonnement.addEventListener('mouseout', () => {
+        btnAbonnement.style.transform = 'translateY(0)';
+        btnAbonnement.style.boxShadow = '0 4px 12px rgba(255, 165, 0, 0.3)';
+    });
+
+    headerActions.appendChild(btnAbonnement);
+}
+// ==================== SYSTÈME D'ABONNEMENT ====================
+
+// ✅ FONCTION 1: Vérifier le quota avant publication
+async function verifierQuotaAvantPublication(produitId = null) {
+    try {
+        // 📋 Récupérer l'abonnement
+        const { data: abo, error: aboError } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        let limite = 10; // ✅ Plan gratuit PAR DÉFAUT
+        let planActif = false;
+        
+        // ✅ VÉRIFIER SI L'ABONNEMENT EST VALIDE ET ACTIF
+        if (abo && !aboError) {
+            const expiration = new Date(abo.date_expiration);
+            const maintenant = new Date();
+            
+            // Seulement appliquer la limite de l'abonnement s'il est ACTIF
+            if (expiration > maintenant) {
+                limite = abo.limite_produits;
+                planActif = true;
+                console.log(`✅ Abonnement ${abo.plan} actif: ${limite} produits max`);
+            } else {
+                console.log(`⚠️ Abonnement expiré, retour au plan gratuit: ${limite} produits max`);
+            }
+        } else {
+            console.log(`📊 Plan gratuit: ${limite} produits max`);
+        }
+
+        // 📊 Compter les produits PUBLIÉS
+        const { data: produits, error: countError } = await supabase
+            .from('produits')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'published');
+
+        if (countError) throw countError;
+
+        let nombrePublies = produits ? produits.length : 0;
+        
+        // ✅ Si on édite un produit existant, ne pas le compter
+        if (produitId) {
+            const produitExiste = produits?.find(p => p.id === produitId);
+            if (produitExiste) {
+                nombrePublies--;
+            }
+        }
+
+        const restant = limite - nombrePublies;
+        const peutPublier = nombrePublies < limite;
+
+        console.log(`📊 Quota actuel: ${nombrePublies}/${limite} produits publiés (${restant} restant${restant > 1 ? 's' : ''})`);
+
+        return {
+            peutPublier,
+            nombrePublies,
+            limite,
+            restant,
+            planActif
+        };
+        
+    } catch (error) {
+        console.error('❌ Erreur vérification quota:', error);
+        // ✅ EN CAS D'ERREUR: Retourner le plan gratuit par défaut
+        return { 
+            peutPublier: false, 
+            nombrePublies: 0, 
+            limite: 10, 
+            restant: 10,
+            planActif: false 
+        };
+    }
+}
+
+// ✅ FONCTION 2: Gérer les produits expirés
+async function gererProduitsExpires() {
+    try {
+        if (!currentUser) return;
+
+        const { data: abo, error: aboError } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (aboError && aboError.code !== 'PGRST116') {
+            console.error('Erreur récupération abonnement:', aboError);
+            return;
+        }
+
+        if (!abo || new Date(abo.date_expiration) <= new Date()) {
+            console.log('⚠️ Pas d\'abonnement actif - Application limite gratuite');
+            
+            // Récupérer tous les produits publiés
+            const { data: produitsPublies, error: fetchError } = await supabase
+                .from('produits')
+                .select('id, created_at')
+                .eq('user_id', currentUser.id)
+                .eq('statut', 'published')
+                .order('created_at', { ascending: false });
+
+            if (fetchError) throw fetchError;
+
+            if (!produitsPublies || produitsPublies.length <= 10) {
+                return;
+            }
+
+            // Mettre en brouillon les produits au-delà de 10
+            const produitsADrafter = produitsPublies.slice(10);
+            const idsADrafter = produitsADrafter.map(p => p.id);
+
+            const { error: updateError } = await supabase
+                .from('produits')
+                .update({ 
+                    statut: 'draft',
+                    date_draft: new Date().toISOString()
+                })
+                .in('id', idsADrafter);
+
+            if (updateError) throw updateError;
+
+            console.log(`📦 ${produitsADrafter.length} produit(s) mis en brouillon`);
+        }
+    } catch (error) {
+        console.error('❌ Erreur gestion produits expirés:', error);
+    }
+}
+
+// ✅ FONCTION 3: Supprimer les produits anciens (>14 jours)
+async function supprimerProduitsAnciens() {
+    try {
+        if (!currentUser) return;
+
+        const dateLimite = new Date();
+        dateLimite.setDate(dateLimite.getDate() - 14);
+        const dateLimiteISO = dateLimite.toISOString();
+
+        console.log(`🗑️ Recherche des produits en brouillon depuis plus de 14 jours`);
+
+        const { data: produitsASupprimer, error: fetchError } = await supabase
+            .from('produits')
+            .select('id, nom, date_draft, created_at')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'draft')
+            .not('date_draft', 'is', null)
+            .lt('date_draft', dateLimiteISO);
+
+        if (fetchError) throw fetchError;
+
+        if (!produitsASupprimer || produitsASupprimer.length === 0) {
+            console.log('ℹ️ Aucun produit ancien à supprimer');
+            return;
+        }
+
+        console.log(`⚠️ ${produitsASupprimer.length} produit(s) à supprimer`);
+
+        const ids = produitsASupprimer.map(p => p.id);
+        const { error: deleteError } = await supabase
+            .from('produits')
+            .delete()
+            .in('id', ids);
+
+        if (deleteError) throw deleteError;
+
+        console.log(`✅ ${produitsASupprimer.length} produit(s) supprimés automatiquement`);
+        
+        afficherNotification(
+            `🗑️ ${produitsASupprimer.length} produit(s) en brouillon depuis plus de 14 jours ont été supprimés`,
+            'info'
+        );
+
+    } catch (error) {
+        console.error('❌ Erreur suppression produits anciens:', error);
+    }
+}
+
+// ✅ FONCTION 4: Afficher avertissement produits en danger
+async function afficherAvertissementProduitsEnDanger() {
+    try {
+        if (!currentUser) return;
+
+        const date7Jours = new Date();
+        date7Jours.setDate(date7Jours.getDate() - 7);
+        
+        const date14Jours = new Date();
+        date14Jours.setDate(date14Jours.getDate() - 14);
+
+        const { data: produitsEnDanger, error } = await supabase
+            .from('produits')
+            .select('id, nom, date_draft')
+            .eq('user_id', currentUser.id)
+            .eq('statut', 'draft')
+            .not('date_draft', 'is', null)
+            .lt('date_draft', date7Jours.toISOString())
+            .gte('date_draft', date14Jours.toISOString());
+
+        if (error) throw error;
+
+        if (!produitsEnDanger || produitsEnDanger.length === 0) {
+            return;
+        }
+
+        const banniere = document.createElement('div');
+        banniere.id = 'warning-banner';
+        banniere.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #FF9500 0%, #FF6B00 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(255, 149, 0, 0.3);
+            z-index: 1500;
+            max-width: 600px;
+            width: 90%;
+            animation: slideDown 0.5s ease;
+            font-family: 'Poppins', sans-serif;
+        `;
+
+        const joursRestants = produitsEnDanger.map(p => {
+            const joursBrouillon = Math.floor((new Date() - new Date(p.date_draft)) / (1000 * 60 * 60 * 24));
+            return 14 - joursBrouillon;
+        });
+        const minJours = Math.min(...joursRestants);
+
+        banniere.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="font-size: 2.5rem;">⚠️</div>
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 700;">
+                        Attention : Produits en danger !
+                    </h3>
+                    <p style="margin: 0 0 12px 0; font-size: 0.9rem; opacity: 0.95;">
+                        ${produitsEnDanger.length} produit(s) seront supprimés dans ${minJours} jour${minJours > 1 ? 's' : ''}.
+                    </p>
+                    <div style="display: flex; gap: 12px;">
+                        <button onclick="window.location.href='abonnement.html'" 
+                                style="padding: 10px 20px; background: white; color: #FF9500; 
+                                       border: none; border-radius: 10px; font-weight: 700; 
+                                       cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.85rem;">
+                            🔄 Réactiver avec un abonnement
+                        </button>
+                        <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove()" 
+                                style="padding: 10px 20px; background: rgba(255, 255, 255, 0.2); color: white; 
+                                       border: 2px solid white; border-radius: 10px; font-weight: 600; 
+                                       cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.85rem;">
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(banniere);
+
+    } catch (error) {
+        console.error('❌ Erreur affichage avertissement:', error);
+    }
+}
+
+// ✅ FONCTION 5: Afficher le statut de l'abonnement
+async function afficherStatutAbonnement() {
+    try {
+        const { data: abo, error } = await supabase
+            .from('abonnements')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        abonnementActuel = abo;
+
+        const quota = await verifierQuotaAvantPublication();
+        
+        const banniere = document.createElement('div');
+        banniere.id = 'subscription-status';
+        banniere.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            z-index: 1500;
+            max-width: 350px;
+            animation: slideInRight 0.5s ease;
+            font-family: 'Poppins', sans-serif;
+        `;
+
+        let contenu = '';
+        
+        if (!abo || new Date(abo.date_expiration) <= new Date()) {
+            banniere.style.borderLeft = '4px solid #FF9500';
+            contenu = `
+                <div style="display: flex; align-items: start; gap: 12px;">
+                    <div style="font-size: 2rem;">⚠️</div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 600;">
+                            Plan gratuit actif
+                        </h3>
+                        <p style="margin: 0 0 8px 0; color: #666; font-size: 0.9rem;">
+                            ${quota.nombrePublies}/${quota.limite} produits publiés
+                        </p>
+                        <div style="background: #f0f0f0; height: 8px; border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
+                            <div style="background: ${quota.nombrePublies >= quota.limite ? '#FF3B30' : '#FF9500'}; height: 100%; width: ${(quota.nombrePublies / quota.limite) * 100}%; transition: width 0.3s ease;"></div>
+                        </div>
+                        <button onclick="window.location.href='abonnement.html'" 
+                                style="width: 100%; padding: 12px; background: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%); 
+                                       color: white; border: none; border-radius: 12px; font-weight: 600; 
+                                       cursor: pointer; font-family: 'Poppins', sans-serif;">
+                            📋 Voir les offres
+                        </button>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; font-size: 1.5rem; 
+                                   cursor: pointer; color: #999; padding: 0; line-height: 1;">
+                        ×
+                    </button>
+                </div>
+            `;
+        } else {
+            const expiration = new Date(abo.date_expiration);
+            const maintenant = new Date();
+            const joursRestants = Math.ceil((expiration - maintenant) / (1000 * 60 * 60 * 24));
+            
+            banniere.style.borderLeft = '4px solid #34C759';
+            contenu = `
+                <div style="display: flex; align-items: start; gap: 12px;">
+                    <div style="font-size: 2rem;">✅</div>
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 600; color: #34C759;">
+                            Plan ${abo.plan.toUpperCase()} actif
+                        </h3>
+                        <p style="margin: 0 0 8px 0; color: #666; font-size: 0.9rem;">
+                            ${quota.nombrePublies}/${quota.limite} produits utilisés
+                        </p>
+                        <div style="background: #f0f0f0; height: 8px; border-radius: 4px; margin-bottom: 12px; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, #34C759, #4CAF50); height: 100%; width: ${(quota.nombrePublies / quota.limite) * 100}%; transition: width 0.3s ease;"></div>
+                        </div>
+                        <p style="margin: 0; color: #999; font-size: 0.8rem;">
+                            Expire dans ${joursRestants} jour${joursRestants > 1 ? 's' : ''}
+                        </p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; font-size: 1.5rem; 
+                                   cursor: pointer; color: #999; padding: 0; line-height: 1;">
+                        ×
+                    </button>
+                </div>
+            `;
+        }
+
+        banniere.innerHTML = contenu;
+        document.body.appendChild(banniere);
+
+    } catch (error) {
+        console.error('❌ Erreur affichage statut:', error);
+    }
+}
+
+// ✅ FONCTION 6: Initialiser le système d'abonnement
+async function initialiserSystemeAbonnement() {
+    try {
+        console.log('🚀 Initialisation du système d\'abonnement...');
+        
+        await gererProduitsExpires();
+        await supprimerProduitsAnciens();
+        await afficherAvertissementProduitsEnDanger();
+        
+        console.log('✅ Système d\'abonnement initialisé avec succès');
+        
+    } catch (error) {
+        console.error('❌ Erreur initialisation système:', error);
+    }
+}// ==================== INITIALISATION DES ÉVÉNEMENTS ====================
+function initialiserEvenements() {
+    const form = document.getElementById('productForm');
+    if (form) {
+        form.addEventListener('submit', gererSoumissionFormulaire);
+    }
+
+    document.getElementById('productName')?.addEventListener('input', mettreAJourApercu);
+    document.getElementById('productDescription')?.addEventListener('input', mettreAJourApercu);
+    document.getElementById('productPrice')?.addEventListener('input', mettreAJourApercu);
+    document.getElementById('productStock')?.addEventListener('input', mettreAJourApercu);
+
+    const mainImageInput = document.getElementById('productMainImage');
+    if (mainImageInput) {
+        mainImageInput.addEventListener('change', gererImagePrincipale);
+    }
+
+    const removeMainImageBtn = document.getElementById('removeMainImage');
+    if (removeMainImageBtn) {
+        removeMainImageBtn.addEventListener('click', supprimerImagePrincipale);
+    }
+
+    const slots = document.querySelectorAll('.description-image-slot');
+    slots.forEach((slot, index) => {
+        const input = slot.querySelector('.desc-image-input');
+        
+        slot.addEventListener('click', (e) => {
+            if (!e.target.closest('.description-image-remove')) {
+                input.click();
+            }
+        });
+
+        input.addEventListener('change', (e) => {
+            gererImageDescription(e, index);
+        });
+    });
+
+    console.log('🎯 Événements initialisés');
+}
+
+// ==================== GESTION IMAGE PRINCIPALE ====================
+function gererImagePrincipale(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        afficherNotification('❌ Veuillez sélectionner une image', 'error');
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        afficherNotification('❌ L\'image ne doit pas dépasser 5MB', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        mainImage = event.target.result;
+        afficherImagePrincipale(event.target.result);
+        mettreAJourApercuPrincipal();
+        afficherNotification('✅ Image principale ajoutée', 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+function afficherImagePrincipale(imageUrl) {
+    const preview = document.getElementById('mainImagePreview');
+    const previewImg = document.getElementById('mainImagePreviewImg');
+    const uploadZone = document.querySelector('.upload-zone');
+
+    if (preview && previewImg) {
+        previewImg.src = imageUrl;
+        preview.style.display = 'block';
+        if (uploadZone) uploadZone.style.display = 'none';
+    }
+}
+
+function supprimerImagePrincipale() {
+    mainImage = null;
+    
+    const preview = document.getElementById('mainImagePreview');
+    const uploadZone = document.querySelector('.upload-zone');
+    const mainImageInput = document.getElementById('productMainImage');
+
+    if (preview) preview.style.display = 'none';
+    if (uploadZone) uploadZone.style.display = 'block';
+    if (mainImageInput) mainImageInput.value = '';
+
+    mettreAJourApercuPrincipal();
+    afficherNotification('🗑️ Image principale supprimée', 'info');
+}
+
+function mettreAJourApercuPrincipal() {
+    const previewContainer = document.querySelector('.preview-image-container');
+    if (!previewContainer) return;
+
+    if (mainImage) {
+        previewContainer.innerHTML = `
+            <img src="${mainImage}" style="width: 100%; height: 100%; object-fit: cover;" alt="Aperçu produit">
+        `;
+    } else {
+        previewContainer.innerHTML = `
+            <div class="preview-placeholder">
+                <p>🖼️</p>
+                <p>Image principale</p>
+            </div>
+        `;
+    }
+}
+
+// ==================== GESTION IMAGES DESCRIPTION ====================
+function gererImageDescription(e, slotIndex) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        afficherNotification('❌ Veuillez sélectionner une image', 'error');
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        afficherNotification('❌ L\'image ne doit pas dépasser 5MB', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        descriptionImages[slotIndex] = event.target.result;
+        afficherImageDansSlot(slotIndex, event.target.result);
+        mettreAJourApercuImages();
+        afficherNotification(`✅ Image ${slotIndex + 1} ajoutée`, 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+function afficherImageDansSlot(slotIndex, imageUrl) {
+    const slot = document.querySelector(`.description-image-slot[data-slot="${slotIndex + 1}"]`);
+    if (!slot) return;
+
+    slot.classList.add('has-image');
+    slot.innerHTML = '';
+
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.className = 'description-image-preview';
+    img.alt = `Image de description ${slotIndex + 1}`;
+    slot.appendChild(img);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'description-image-remove';
+    removeBtn.innerHTML = '×';
+    removeBtn.type = 'button';
+    removeBtn.onclick = (e) => {
+        e.stopPropagation();
+        supprimerImageDescription(slotIndex);
+    };
+    slot.appendChild(removeBtn);
+
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.className = 'desc-image-input';
+    input.style.display = 'none';
+    input.addEventListener('change', (e) => gererImageDescription(e, slotIndex));
+    slot.appendChild(input);
+}
+
+function supprimerImageDescription(slotIndex) {
+    descriptionImages[slotIndex] = null;
+    
+    const slot = document.querySelector(`.description-image-slot[data-slot="${slotIndex + 1}"]`);
+    if (!slot) return;
+
+    slot.classList.remove('has-image');
+    slot.innerHTML = `
+        <div class="description-image-placeholder">
+            <div class="description-image-icon">🖼️</div>
+            <p style="font-size: 0.85rem;">Image ${slotIndex + 1}</p>
+        </div>
+        <input type="file" accept="image/*" style="display: none;" class="desc-image-input">
+    `;
+
+    const input = slot.querySelector('.desc-image-input');
+    input.addEventListener('change', (e) => gererImageDescription(e, slotIndex));
+
+    mettreAJourApercuImages();
+    afficherNotification(`🗑️ Image ${slotIndex + 1} supprimée`, 'info');
+}
+
+function mettreAJourApercuImages() {
+    const container = document.getElementById('previewDescImages');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    const imagesNonNulles = descriptionImages.filter(img => img !== null);
+    
+    if (imagesNonNulles.length === 0) return;
+
+    imagesNonNulles.forEach((imageUrl, index) => {
+        const imgWrapper = document.createElement('div');
+        imgWrapper.style.cssText = `
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            box-shadow: 0 2px 8px rgba(199, 125, 255, 0.2);
+        `;
+
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.style.cssText = `
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        `;
+        img.alt = `Description ${index + 1}`;
+
+        imgWrapper.appendChild(img);
+        container.appendChild(imgWrapper);
+    });
+}
+
+// ==================== MISE À JOUR APERÇU ====================
+function mettreAJourApercu() {
+    const nom = document.getElementById('productName')?.value || 'Nom du produit';
+    const description = document.getElementById('productDescription')?.value || 'La description apparaîtra ici...';
+    const prix = document.getElementById('productPrice')?.value || '0';
+
+    const previewTitle = document.getElementById('previewTitle');
+    const previewDescription = document.getElementById('previewDescription');
+    const previewPrice = document.getElementById('previewPrice');
+
+    if (previewTitle) previewTitle.textContent = nom;
+    if (previewDescription) previewDescription.textContent = description;
+    if (previewPrice) {
+        const prixFormate = parseInt(prix) || 0;
+        previewPrice.textContent = `${prixFormate.toLocaleString('fr-FR')} FCFA`;
+    }
+}
+
+// ==================== UPLOAD SUPABASE ====================
+async function uploaderImageVersSupabase(imageBase64, nomFichier) {
+    try {
+        const response = await fetch(imageBase64);
+        const blob = await response.blob();
+        
+        const timestamp = Date.now();
+        const randomStr = Math.random().toString(36).substring(7);
+        const extension = blob.type.split('/')[1];
+        
+        const cheminFichier = `${currentUser.id}/produits/${timestamp}_${randomStr}_${nomFichier}.${extension}`;
+
+        const { data, error } = await supabase.storage
+            .from('images-produits')
+            .upload(cheminFichier, blob, {
+                contentType: blob.type,
+                upsert: false
+            });
+
+        if (error) throw error;
+
+        const { data: urlData } = supabase.storage
+            .from('images-produits')
+            .getPublicUrl(cheminFichier);
+
+        return urlData.publicUrl;
+    } catch (error) {
+        console.error('❌ Erreur upload:', error);
+        throw error;
+    }
+}
+
+// ==================== FONCTIONS SUPABASE ====================
+async function chargerProduits() {
+    try {
+        if (!currentUser) {
+            console.warn('⚠️ Aucun utilisateur connecté');
+            return [];
+        }
+        
+        const { data, error } = await supabase
+            .from('produits')
+            .select('*')
+            .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        produits = data || [];
+        console.log(`✅ ${produits.length} produit(s) chargés`);
+        
+        return produits;
+    } catch (error) {
+        console.error('❌ Erreur chargement produits:', error);
+        return [];
+    }
+}
+
+async function sauvegarderProduit(produitData) {
+    try {
+        produitData.user_id = currentUser.id;
+        
+        const { data, error } = await supabase
+            .from('produits')
+            .insert([produitData])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        console.log('💾 Produit sauvegardé:', data);
+        return data;
+    } catch (error) {
+        console.error('❌ Erreur sauvegarde:', error);
+        throw error;
+    }
+}
+
+async function mettreAJourProduit(id, produitData) {
+    try {
+        if (produitData.statut === 'published') {
+            produitData.date_draft = null;
+        } else if (produitData.statut === 'draft' && !produitData.date_draft) {
+            produitData.date_draft = new Date().toISOString();
+        }
+        
+        const { data, error } = await supabase
+            .from('produits')
+            .update(produitData)
+            .eq('id', id)
+            .eq('user_id', currentUser.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        console.log('✏️ Produit mis à jour:', data);
+        return data;
+    } catch (error) {
+        console.error('❌ Erreur mise à jour:', error);
+        throw error;
+    }
+}
+
+async function chargerStatistiques() {
+    try {
+        if (!currentUser) return;
+        
+        const { data: produits } = await supabase
+            .from('produits')
+            .select('*')
+            .eq('user_id', currentUser.id);
+        
+        const { data: commandes } = await supabase
+            .from('commandes')
+            .select('*')
+            .eq('user_id', currentUser.id);
+        
+        const nbProduits = produits?.length || 0;
+        const nbCommandes = commandes?.length || 0;
+        
+        let chiffreAffaires = 0;
+        if (commandes && commandes.length > 0) {
+            chiffreAffaires = commandes.reduce((total, cmd) => total + (cmd.montant || 0), 0);
+        }
+        
+        const kpiCards = document.querySelectorAll('.kpi-card');
+        if (kpiCards[0]) {
+            const valueElem = kpiCards[0].querySelector('.kpi-value');
+            if (valueElem) {
+                valueElem.textContent = `${chiffreAffaires.toLocaleString('fr-FR')} FCFA`;
+            }
+        }
+        
+        if (kpiCards[1]) {
+            const valueElem = kpiCards[1].querySelector('.kpi-value');
+            if (valueElem) {
+                valueElem.textContent = nbCommandes;
+            }
+        }
+        
+        if (kpiCards[2]) {
+            const valueElem = kpiCards[2].querySelector('.kpi-value');
+            if (valueElem) {
+                valueElem.textContent = nbProduits;
+            }
+        }
+        
+    } catch (error) {
+        console.error('❌ Erreur statistiques:', error);
+    }
+}
+// ==================== GESTION SOUMISSION FORMULAIRE ====================
+async function gererSoumissionFormulaire(e) {
+    e.preventDefault();
+    
+    const btnSubmit = e.target.querySelector('button[type="submit"]');
+    const textOriginal = btnSubmit.textContent;
+    
+    try {
+        // 🔄 Afficher le chargement
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = '⏳ Enregistrement...';
+        
+        // 📋 Récupérer les données du formulaire
+        const nom = document.getElementById('productName').value.trim();
+        const description = document.getElementById('productDescription').value.trim();
+        const prix = parseFloat(document.getElementById('productPrice').value);
+        const stock = parseInt(document.getElementById('productStock').value);
+        const categorie = document.getElementById('productCategory').value;
+        const statutSelectionne = document.querySelector('input[name="productStatus"]:checked').value;
+        
+        // ✅ Validation des champs obligatoires
+        if (!nom || !description || !prix || !stock || !categorie) {
+            afficherNotification('❌ Veuillez remplir tous les champs obligatoires', 'error');
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = textOriginal;
+            return;
+        }
+        
+        if (!mainImage) {
+            afficherNotification('❌ Veuillez ajouter une image principale', 'error');
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = textOriginal;
+            return;
+        }
+        
+        // 📊 VÉRIFIER LE QUOTA SI PUBLICATION
+        let statutFinal = statutSelectionne;
+        
+        if (statutSelectionne === 'published') {
+            console.log('🔍 Vérification du quota avant publication...');
+            const quota = await verifierQuotaAvantPublication(produitEnEdition?.id);
+            
+            if (!quota.peutPublier) {
+                console.warn(`⚠️ Quota atteint: ${quota.nombrePublies}/${quota.limite}`);
+                
+                afficherNotification(
+                    `❌ Limite atteinte : ${quota.nombrePublies}/${quota.limite} produits publiés. ${quota.planActif ? 'Passez à un plan supérieur' : 'Activez un abonnement'} pour publier plus.`,
+                    'error'
+                );
+                
+                // ✅ Proposer de sauvegarder en brouillon
+                const confirmer = confirm(
+                    `⚠️ Vous avez atteint la limite de ${quota.limite} produits publiés.\n\n` +
+                    `Voulez-vous enregistrer ce produit en BROUILLON ?\n\n` +
+                    `→ OUI : Le produit sera sauvegardé mais non visible\n` +
+                    `→ NON : Annuler l'enregistrement`
+                );
+                
+                if (confirmer) {
+                    statutFinal = 'draft';
+                    document.querySelector('input[name="productStatus"][value="draft"]').checked = true;
+                    afficherNotification('ℹ️ Le produit sera enregistré en brouillon', 'info');
+                } else {
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = textOriginal;
+                    return;
+                }
+            } else {
+                console.log(`✅ Quota OK : ${quota.nombrePublies}/${quota.limite} (${quota.restant} restant${quota.restant > 1 ? 's' : ''})`);
+            }
+        }
+        
+        // 📤 Upload de l'image principale
+        btnSubmit.textContent = '⏳ Upload image principale...';
+        let mainImageUrl = mainImage;
+        
+        if (mainImage.startsWith('data:')) {
+            mainImageUrl = await uploaderImageVersSupabase(mainImage, 'main');
+        }
+        
+        // 📤 Upload des images de description
+        btnSubmit.textContent = '⏳ Upload images description...';
+        const descriptionImagesUrls = [];
+        
+        for (let i = 0; i < descriptionImages.length; i++) {
+            const img = descriptionImages[i];
+            if (img) {
+                if (img.startsWith('data:')) {
+                    const url = await uploaderImageVersSupabase(img, `desc_${i + 1}`);
+                    descriptionImagesUrls.push(url);
+                } else {
+                    descriptionImagesUrls.push(img);
+                }
+            }
+        }
+        
+        // 🗂️ Construire l'objet produit
+        const produitData = {
+            nom,
+            description,
+            prix,
+            stock,
+            categorie,
+            statut: statutFinal,
+            main_image: mainImageUrl,
+            description_images: descriptionImagesUrls,
+            date_draft: statutFinal === 'draft' ? new Date().toISOString() : null
+        };
+        
+        // 💾 Sauvegarder ou mettre à jour
+        btnSubmit.textContent = '⏳ Sauvegarde...';
+        
+        if (produitEnEdition) {
+            await mettreAJourProduit(produitEnEdition.id, produitData);
+            afficherNotification('✅ Produit mis à jour avec succès !', 'success');
+        } else {
+            await sauvegarderProduit(produitData);
+            afficherNotification('✅ Produit créé avec succès !', 'success');
+        }
+        
+        // 🔄 Recharger et réinitialiser
+        await chargerProduits();
+        await chargerStatistiques();
+        await afficherStatutAbonnement(); // ✅ Mettre à jour le statut
+        reinitialiserFormulaire();
+        
+        // 🎉 Redirection optionnelle
+        setTimeout(() => {
+            const confirmer = confirm('Produit enregistré ! Voulez-vous voir vos produits ?');
+            if (confirmer) {
+                window.location.href = 'produit.html';
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('❌ Erreur lors de la soumission:', error);
+        afficherNotification('❌ Erreur : ' + error.message, 'error');
+    } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = textOriginal;
+    }
+}
+
+// ==================== UTILITAIRES ====================
+function reinitialiserFormulaire() {
+    document.getElementById('productForm').reset();
+    descriptionImages = [null, null, null];
+    mainImage = null;
+    produitEnEdition = null;
+
+    const preview = document.getElementById('mainImagePreview');
+    const uploadZone = document.querySelector('.upload-zone');
+    if (preview) preview.style.display = 'none';
+    if (uploadZone) uploadZone.style.display = 'block';
+
+    const slots = document.querySelectorAll('.description-image-slot');
+    slots.forEach((slot, index) => {
+        slot.classList.remove('has-image');
+        slot.innerHTML = `
+            <div class="description-image-placeholder">
+                <div class="description-image-icon">🖼️</div>
+                <p style="font-size: 0.85rem;">Image ${index + 1}</p>
+            </div>
+            <input type="file" accept="image/*" style="display: none;" class="desc-image-input">
+        `;
+        const input = slot.querySelector('.desc-image-input');
+        input.addEventListener('change', (e) => gererImageDescription(e, index));
+    });
+
+    mettreAJourApercu();
+    mettreAJourApercuImages();
+    mettreAJourApercuPrincipal();
+    
+    console.log('🔄 Formulaire réinitialisé');
+}
+
+async function verifierEditionDepuisLocalStorage() {
+    const idProduit = localStorage.getItem('produit_en_edition');
+    
+    if (idProduit) {
+        console.log('🔍 Chargement du produit pour édition:', idProduit);
+        await chargerProduitPourEdition(parseInt(idProduit));
+        localStorage.removeItem('produit_en_edition');
+    }
+}
+
+async function chargerProduitPourEdition(id) {
+    try {
+        const { data, error } = await supabase
+            .from('produits')
+            .select('*')
+            .eq('id', id)
+            .eq('user_id', currentUser.id)
+            .single();
+
+        if (error) throw error;
+
+        produitEnEdition = data;
+
+        document.getElementById('productName').value = data.nom;
+        document.getElementById('productDescription').value = data.description;
+        document.getElementById('productPrice').value = data.prix;
+        document.getElementById('productStock').value = data.stock;
+        document.getElementById('productCategory').value = data.categorie;
+        document.querySelector(`input[name="productStatus"][value="${data.statut}"]`).checked = true;
+
+        if (data.main_image) {
+            mainImage = data.main_image;
+            afficherImagePrincipale(data.main_image);
+        }
+
+        if (data.description_images && Array.isArray(data.description_images)) {
+            data.description_images.forEach((url, index) => {
+                if (index < 3) {
+                    descriptionImages[index] = url;
+                    afficherImageDansSlot(index, url);
+                }
+            });
+        }
+
+        mettreAJourApercu();
+        mettreAJourApercuImages();
+        afficherNotification('✏️ Produit chargé pour édition', 'info');
+    } catch (error) {
+        console.error('❌ Erreur chargement:', error);
+        afficherNotification('❌ Erreur lors du chargement du produit', 'error');
+    }
+}
+
+function afficherNotification(message, type = 'info') {
+    let conteneur = document.getElementById('notification-container');
+
+    if (!conteneur) {
+        conteneur = document.createElement('div');
+        conteneur.id = 'notification-container';
+        conteneur.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        `;
+        document.body.appendChild(conteneur);
+    }
+
+    const couleurs = {
+        success: '#34C759',
+        error: '#FF3B30',
+        info: '#007AFF',
+        warning: '#FF9500'
+    };
+
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        background: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-left: 4px solid ${couleurs[type]};
+        animation: slideIn 0.5s ease;
+        max-width: 350px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        color: #333;
+    `;
+    notification.textContent = message;
+
+    conteneur.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s ease';
+        setTimeout(() => notification.remove(), 500);
+    }, 4000);
+}
+
+// ==================== ANIMATIONS CSS ====================
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+        to { opacity: 0; transform: translateY(-10px); }
+    }
+    @keyframes slideDown {
+        from { transform: translate(-50%, -100px); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    @keyframes slideInRight {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
+
+// ==================== LOG DÉMARRAGE ====================
+console.log('%c🌸 Tableau de Bord - Ma Boutique Élégante 🌸', 'color: #007AFF; font-size: 20px; font-weight: bold;');
+console.log('%c✅ Connecté à Supabase + Système d\'abonnement actif', 'color: #4CAF50; font-weight: bold;');
+console.log('%c🔒 Plan gratuit: 10 produits | Brouillons supprimés après 14 jours', 'color: #FF9500; font-weight: bold;');
+console.log('%c💾 Vérification du quota avant chaque publication', 'color: #2196F3; font-size: 12px;');
+</script>
+</html>
